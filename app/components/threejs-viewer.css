@@ -1,0 +1,10 @@
+.canvas-container {
+    position: relative;
+    height: 500px;
+  }
+  
+  .stats-position canvas {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+  }
