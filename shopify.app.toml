@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "d166b6dd474bd37a4dac6f4300557345"
-application_url = "https://jersey-vehicles-stand-operates.trycloudflare.com"
+application_url = "https://failed-chemicals-folder-methodology.trycloudflare.com"
 embedded = true
 name = "webdgpu-3d-model-viewer"
 handle = "webdgpu-3d-model-viewer"
@@ -19,13 +19,13 @@ api_version = "2025-01"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_products,write_products,read_product_listings"
+scopes = "read_products,write_products,read_product_listings,read_files"
 
 [auth]
 redirect_urls = [
-  "https://jersey-vehicles-stand-operates.trycloudflare.com/auth/callback",
-  "https://jersey-vehicles-stand-operates.trycloudflare.com/auth/shopify/callback",
-  "https://jersey-vehicles-stand-operates.trycloudflare.com/api/auth/callback"
+  "https://failed-chemicals-folder-methodology.trycloudflare.com/auth/callback",
+  "https://failed-chemicals-folder-methodology.trycloudflare.com/auth/shopify/callback",
+  "https://failed-chemicals-folder-methodology.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
