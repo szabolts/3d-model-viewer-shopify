@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGL Viewer</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.173/build/three.module.js",
+                "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.173/build/three.webgpu.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.173/examples/jsm/",
+                "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.173/examples/jsm/",
+                "stats-gl": "https://cdn.jsdelivr.net/npm/stats-gl@3.6.0/dist/main.js",
+                "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.173/build/three.tsl.js"
+            }
+        }
+    </script>
+    <style>
+        body, html {
+            margin: 0;
+            height: 100%;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <script type="module" src="WebGLRenderer.js"></script>
+</body>
+</html>

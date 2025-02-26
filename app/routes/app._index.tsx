@@ -254,7 +254,7 @@ export default function Index() {
   const navigate = useNavigate();
   const [sortSelected, setSortSelected] = useState(['filename asc']);
   const [queryValue, setQueryValue] = useState('');
-  const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Filtering);
+  const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Default);
   const [selected, setSelected] = useState(0);
 
   const tabs: TabProps[] = [
@@ -347,6 +347,7 @@ export default function Index() {
                   onClearAll={handleFiltersClearAll}
                   mode={mode}
                   setMode={setMode}
+                  autoFocusSearchField={false}
                 />
                 <ModelTable models={sortedModels} shop={shop} />
               </>

@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "d166b6dd474bd37a4dac6f4300557345"
-application_url = "https://hung-dad-ww-fatty.trycloudflare.com"
+application_url = "https://palm-timer-hear-buying.trycloudflare.com"
 embedded = true
 name = "webdgpu-3d-model-viewer"
 handle = "webdgpu-3d-model-viewer"
@@ -23,9 +23,9 @@ scopes = "read_products,write_products,read_product_listings,read_files"
 
 [auth]
 redirect_urls = [
-  "https://hung-dad-ww-fatty.trycloudflare.com/auth/callback",
-  "https://hung-dad-ww-fatty.trycloudflare.com/auth/shopify/callback",
-  "https://hung-dad-ww-fatty.trycloudflare.com/api/auth/callback"
+  "https://palm-timer-hear-buying.trycloudflare.com/auth/callback",
+  "https://palm-timer-hear-buying.trycloudflare.com/auth/shopify/callback",
+  "https://palm-timer-hear-buying.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

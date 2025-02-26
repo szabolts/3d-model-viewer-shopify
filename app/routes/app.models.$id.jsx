@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { json, redirect } from "@remix-run/node";
 import {
   useActionData,
@@ -9,21 +9,16 @@ import {
 } from "@remix-run/react";
 import { authenticate } from "../shopify.server";
 import {
-  Card,
-  Button,
-  InlineStack,
   Layout,
   Page,
-  Text,
-  Thumbnail,
   BlockStack,
-  PageActions,
-  DropZone,
-  LegacyStack,
-  Box
+  PageActions
 } from "@shopify/polaris";
-import { ImageIcon } from "@shopify/polaris-icons";
-import ThreeJSViewer from "../components/threejs-viewer";
+import { ModelControls } from '../components/ModelControls';
+import { ModelPreview } from '../components/ModelPreview';
+import { ProductSelector } from '../components/ProductSelector';
+import { ModelUploader } from '../components/ModelUploader';
+import { defaultSettings, prepareFormData } from '../components/utils';
 
 async function waitForMediaReady(admin, mediaId, maxAttempts = 10) {
   for (let i = 0; i < maxAttempts; i++) {
@@ -37,7 +32,7 @@ async function waitForMediaReady(admin, mediaId, maxAttempts = 10) {
       }
     `, {
       variables: {
-        mediaId: mediaId 
+        mediaId: mediaId
       }
     });
 
@@ -59,24 +54,98 @@ async function waitForMediaReady(admin, mediaId, maxAttempts = 10) {
   throw new Error('Timeout waiting for media to be ready');
 }
 
-async function attachModelToProduct(admin, productId, resourceUrl) {
+async function getCurrentProductsForModel(admin, modelId) {
+  if (modelId === "new") return [];
+
   const response = await admin.graphql(`
-    mutation productCreateMedia($media: [CreateMediaInput!]!, $productId: ID!) {
-      productCreateMedia(media: $media, productId: $productId) {
+    query getModelMediaConnections($id: ID!) {
+      product(id: $id) {
+        media(first: 50) {
+          nodes {
+            ... on Model3d {
+              id
+            }
+          }
+        }
+      }
+    }
+  `, {
+    variables: {
+      id: `gid://shopify/Model3d/${modelId}`
+    }
+  });
+
+  const json = await response.json();
+  return json.data?.product?.media?.nodes?.map(node => node.id) || [];
+}
+
+async function uploadNewModel(admin, file) {
+  const stagedResponse = await admin.graphql(`
+    mutation generateStagedUploads($input: [StagedUploadInput!]!) {
+      stagedUploadsCreate(input: $input) {
+        stagedTargets {
+          url
+          resourceUrl
+          parameters {
+            name
+            value
+          }
+        }
+        userErrors {
+          field
+          message
+        }
+      }
+    }
+  `, {
+    variables: {
+      input: [{
+        filename: file.name,
+        mimeType: "model/gltf-binary",
+        resource: "MODEL_3D",
+        fileSize: file.size.toString()
+      }]
+    }
+  });
+
+  const uploadData = await stagedResponse.json();
+  const target = uploadData.data?.stagedUploadsCreate?.stagedTargets?.[0];
+
+  if (!target) {
+    throw new Error("Failed to get upload URL");
+  }
+
+  const uploadFormData = new FormData();
+  target.parameters.forEach(param => {
+    uploadFormData.append(param.name, param.value);
+  });
+  uploadFormData.append('file', file);
+
+  const uploadResponse = await fetch(target.url, {
+    method: 'POST',
+    body: uploadFormData
+  });
+
+  if (!uploadResponse.ok) {
+    throw new Error("Failed to upload file");
+  }
+
+  return target.resourceUrl;
+}
+
+async function attachModelToProduct(admin, productId, resourceUrl) {
+  console.log('Attaching model to product:', { productId, resourceUrl });
+
+  const response = await admin.graphql(`
+    mutation productCreateMedia($productId: ID!, $media: [CreateMediaInput!]!) {
+      productCreateMedia(productId: $productId, media: $media) {
         media {
           ... on Model3d {
             id
-            mediaContentType
             status
-            preview {
-              image {
-                url
-              }
-            }
             sources {
               format
               url
-              mimeType
             }
           }
         }
@@ -85,17 +154,14 @@ async function attachModelToProduct(admin, productId, resourceUrl) {
           field
           message
         }
-        product {
-          id
-        }
       }
     }
   `, {
     variables: {
       productId: productId,
       media: [{
-        mediaContentType: "MODEL_3D",
         originalSource: resourceUrl,
+        mediaContentType: "MODEL_3D",
         alt: "3D Model"
       }]
     }
@@ -105,10 +171,45 @@ async function attachModelToProduct(admin, productId, resourceUrl) {
   console.log('Product media creation response:', json);
 
   if (json.data?.productCreateMedia?.mediaUserErrors?.length > 0) {
-    throw new Error(json.data.productCreateMedia.mediaUserErrors[0].message);
+    const error = json.data.productCreateMedia.mediaUserErrors[0];
+    throw new Error(`Media creation error: ${error.message} (${error.code})`);
   }
 
-  return json.data.productCreateMedia;
+  return json.data?.productCreateMedia?.media?.[0];
+}
+
+async function removeModelFromProduct(admin, productId, modelId) {
+  console.log('Removing model from product:', { productId, modelId });
+
+  const response = await admin.graphql(`
+    mutation productDeleteMedia($input: ProductDeleteMediaInput!) {
+      productDeleteMedia(input: $input) {
+        deletedMediaIds
+        mediaUserErrors {
+          code
+          field
+          message
+        }
+      }
+    }
+  `, {
+    variables: {
+      input: {
+        mediaIds: [`gid://shopify/Model3d/${modelId}`],
+        productId: productId
+      }
+    }
+  });
+
+  const json = await response.json();
+  console.log('Product media deletion response:', json);
+
+  if (json.data?.productDeleteMedia?.mediaUserErrors?.length > 0) {
+    const error = json.data.productDeleteMedia.mediaUserErrors[0];
+    throw new Error(`Media deletion error: ${error.message} (${error.code})`);
+  }
+
+  return json.data?.productDeleteMedia?.deletedMediaIds;
 }
 
 export async function loader({ request, params }) {
@@ -159,6 +260,7 @@ export async function loader({ request, params }) {
           variants(first: 1) {
             nodes {
               id
+              price
             }
           }
           images(first: 1) {
@@ -188,14 +290,14 @@ export async function loader({ request, params }) {
   const models = responseJson.data?.files?.nodes || [];
   const products = responseJson.data?.products?.nodes || [];
 
-  
+
   const model = models.find(m => m?.id === `gid://shopify/Model3d/${params.id}`);
 
   if (!model) {
     throw new Response("Model not found", { status: 404 });
   }
 
-  
+
   const transformedModel = {
     ...model,
     sources: model.sources || [],
@@ -213,7 +315,7 @@ export async function loader({ request, params }) {
     preview: transformedModel.preview,
     alt: transformedModel.alt,
     filesize: transformedModel.filesize,
-    products: products.filter(product => 
+    products: products.filter(product =>
       product.media.nodes.some(media => media.id === model.id)
     ).map(product => ({
       id: product.id,
@@ -229,134 +331,27 @@ export async function action({ request }) {
   try {
     const { admin } = await authenticate.admin(request);
     const formData = await request.formData();
-    
+
     const modelId = formData.get("modelId");
-    const products = JSON.parse(formData.get('products') || '[]');
+    const product = JSON.parse(formData.get('product') || '{}');
     const file = formData.get('modelFile');
-    
-    console.log('Action started:', {
-      modelId,
-      productsCount: products.length,
-      hasFile: !!file,
-      fileName: file?.name
-    });
 
-    if (!file || !(file instanceof File)) {
-      throw new Error('No valid file provided');
+    if (!product.id) {
+      throw new Error('No product selected');
     }
 
-    // Generate staged upload URL
-    const stagedResponse = await admin.graphql(`
-      mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
-        stagedUploadsCreate(input: $input) {
-          stagedTargets {
-            url
-            resourceUrl
-            parameters {
-              name
-              value
-            }
-          }
-          userErrors {
-            field
-            message
-          }
-        }
+    if (modelId === "new") {
+      if (!file || !(file instanceof File)) {
+        throw new Error('No valid file provided for new model');
       }
-    `, {
-      variables: {
-        input: [{
-          filename: file.name,
-          mimeType: "model/gltf-binary",
-          resource: "MODEL_3D",
-          fileSize: `${file.size}`
-        }]
-      }
-    });
 
-    const uploadData = await stagedResponse.json();
-    const target = uploadData.data?.stagedUploadsCreate?.stagedTargets?.[0];
-
-    if (!target) {
-      throw new Error("Failed to get upload URL");
+      const resourceUrl = await uploadNewModel(admin, file);
+      await attachModelToProduct(admin, product.id, resourceUrl);
+    } else {
+      const modelUrl = await getModelUrl(admin, modelId);
+      await attachModelToProduct(admin, product.id, modelUrl);
     }
 
-    // Upload file
-    const uploadFormData = new FormData();
-    target.parameters.forEach(param => {
-      uploadFormData.append(param.name, param.value);
-    });
-    uploadFormData.append('file', file);
-
-    const uploadResponse = await fetch(target.url, {
-      method: 'POST',
-      body: uploadFormData
-    });
-
-    if (!uploadResponse.ok) {
-      throw new Error("Failed to upload file");
-    }
-
-    // Create media for each product
-    console.log('Creating media for products:', products.length);
-
-    for (const product of products) {
-      console.log('Processing product:', product.id);
-      
-      const response = await admin.graphql(`
-        mutation productCreateMedia($media: [CreateMediaInput!]!, $productId: ID!) {
-          productCreateMedia(media: $media, productId: $productId) {
-            media {
-              ... on Model3d {
-                id
-                status
-                sources {
-                  format
-                  mimeType
-                  url
-                  filesize
-                }
-              }
-              mediaErrors {
-                code
-                details
-                message
-              }
-            }
-            mediaUserErrors {
-              code
-              field
-              message
-            }
-          }
-        }
-      `, {
-        variables: {
-          productId: product.id,
-          media: [{
-            mediaContentType: "MODEL_3D",
-            originalSource: target.resourceUrl,
-            alt: formData.get("alt") || "3D Model"
-          }]
-        }
-      });
-    
-      const result = await response.json();
-      
-      if (result.data?.productCreateMedia?.mediaUserErrors?.length > 0) {
-        throw new Error(result.data.productCreateMedia.mediaUserErrors[0].message);
-      }
-    
-      const mediaId = result.data?.productCreateMedia?.media?.[0]?.id;
-      if (!mediaId) {
-        throw new Error('Failed to get media ID');
-      }
-    
-      console.log('Waiting for media to be processed...');
-      await waitForMediaReady(admin, mediaId);
-      console.log('Media processing complete');
-    }
-    
     return redirect("/app");
   } catch (error) {
     console.error("Action error:", error);
@@ -364,249 +359,146 @@ export async function action({ request }) {
   }
 }
 
-const ModelDropZone = ({ onFileUpload, currentModel }) => {
-  const [files, setFiles] = useState([]);
-  const [dropError, setDropError] = useState(false);
-
-  const handleDrop = useCallback(
-    (_droppedFiles, acceptedFiles, rejectedFiles) => {
-      console.log('Drop event:', {
-        accepted: acceptedFiles.map(f => f.name),
-        rejected: rejectedFiles.map(f => f.name)
-      });
-      
-      setDropError(rejectedFiles.length > 0);
-      
-      if (acceptedFiles.length > 0) {
-        setFiles(acceptedFiles);
-        onFileUpload(acceptedFiles[0]);
+async function getModelUrl(admin, modelId) {
+  const response = await admin.graphql(`
+    query getModel($id: ID!) {
+      node(id: $id) {
+        ... on Model3d {
+          sources {
+            url
+            format
+          }
+        }
       }
-    },
-    [onFileUpload]
-  );
+    }
+  `, {
+    variables: {
+      id: `gid://shopify/Model3d/${modelId}`
+    }
+  });
 
-  const fileUpload = !files.length && (
-    <DropZone.FileUpload actionHint="Accepts .glb files up to 500MB" />
-  );
+  const json = await response.json();
+  const glbSource = json.data?.node?.sources?.find(s => s.format === 'glb');
 
-  const uploadedFiles = files.length > 0 && (
-    <BlockStack gap="300">
-      {files.map((file, index) => (
-        <InlineStack key={index} align="space-between" blockAlign="center">
-          <Text variant="bodyMd" as="span">
-            {file.name}
-          </Text>
-          <Text variant="bodyMd" as="span">
-            {(file.size / 1024 / 1024).toFixed(2)} MB
-          </Text>
-        </InlineStack>
-      ))}
-    </BlockStack>
-  );
+  if (!glbSource?.url) {
+    throw new Error('Could not find GLB source URL for model');
+  }
 
-  return (
-    <BlockStack gap="400">
-      {currentModel && (
-        <Box padding="400" background="bg-surface-secondary" borderRadius="200">
-          <BlockStack gap="200">
-            <Text as="h3" variant="headingMd">Current Model</Text>
-            <Text as="span" variant="bodyMd">URL: {currentModel.url}</Text>
-            {currentModel.filename && (
-              <Text as="span" variant="bodyMd">Filename: {currentModel.filename}</Text>
-            )}
-          </BlockStack>
-        </Box>
-      )}
-      <DropZone
-        accept="model/gltf-binary,.glb"
-        type="file"
-        onDrop={handleDrop}
-        allowMultiple={false}
-        errorOverlayText="File type must be .glb"
-        overlayText="Drop .glb file to upload"
-      >
-        {uploadedFiles}
-        {fileUpload}
-      </DropZone>
-      {dropError && (
-        <Text as="span" variant="bodyMd" tone="critical">
-          Please upload a valid .glb file
-        </Text>
-      )}
-    </BlockStack>
-  );
-};
+  return glbSource.url;
+}
 
 export default function ProductForm() {
   const product = useLoaderData();
   const [formState, setFormState] = useState(product);
   const [cleanFormState, setCleanFormState] = useState(product);
-  const isDirty = JSON.stringify(formState) !== JSON.stringify(cleanFormState);
+  const [settings, setSettings] = useState(defaultSettings);
 
+  const isDirty = JSON.stringify(formState) !== JSON.stringify(cleanFormState);
   const nav = useNavigation();
-  const isSaving = nav.state === "submitting";
   const navigate = useNavigate();
   const submit = useSubmit();
 
-  async function selectProduct() {
+  const handleSelectProduct = async () => {
     const products = await window.shopify.resourcePicker({
       type: 'product',
-      multiple: true,
-      selectionIds: formState.products?.map(product => ({
-        id: product.id
-      })) || []
+      multiple: false, // Only allow selecting one product
+      selectionIds: formState.product ? [{ id: formState.product.id }] : []
     });
-  
+
     if (products) {
       setFormState({
         ...formState,
-        products: products.map(product => ({
-          id: product.id,
-          title: product.title
-        }))
+        product: {
+          id: products[0].id,
+          title: products[0].title
+        }
       });
     }
-  }
+  };
 
-  function handleSave() {
-    const data = new FormData();
-    console.log('Saving form with state:', formState);
-    
-    if (formState.id === "new") {
-      // New model case - require file upload
-      if (formState.modelFile) {
-        data.append("modelFile", formState.modelFile);
-        console.log('Added new model file:', formState.modelFile.name);
+  const handleFileUpload = (file) => {
+    setFormState({
+      ...formState,
+      modelFile: file,
+      modelFileName: file.name
+    });
+  };
+
+  const handleSettingChange = (category, setting, value) => {
+    setSettings(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        [setting]: value
       }
-    } else {
-      // Existing model case - pass URL
-      const modelUrl = formState.media?.nodes?.[0]?.sources?.find(s => s.format === 'glb')?.url;
-      if (modelUrl) {
-        data.append("modelUrl", modelUrl);
-        console.log('Added existing model URL:', modelUrl);
+    }));
+  };
+
+  const handleSaveCameraPosition = (cameraData) => {
+    setSettings(prev => ({
+      ...prev,
+      camera: {
+        ...prev.camera,
+        position: cameraData.position,
+        target: cameraData.target
       }
-      
-      // Allow overriding with new file if provided
-      if (formState.modelFile) {
-        data.append("modelFile", formState.modelFile);
-        console.log('Added new model file:', formState.modelFile.name);
-      }
-    }
-    
-    if (formState.products?.length) {
-      data.append("products", JSON.stringify(formState.products));
-      console.log('Added products:', formState.products);
-    }
-  
-    data.append("modelId", formState.id);
-    data.append("alt", formState.alt || "");
-    
+    }));
+  };
+
+  const handleSave = useCallback(() => {
+    const data = prepareFormData(formState);
     setCleanFormState({ ...formState });
     submit(data, { method: "post", encType: "multipart/form-data" });
-  }
-
-  const model3d = product.media?.nodes?.find(media => 
-    media.mediaContentType === 'MODEL_3D'
-  );
-  const glbSource = model3d?.sources?.find(source => 
-    source.format === 'glb'
-  );
-  const modelUrl = formState.id === "new" 
-  ? formState.modelUrl 
-  : glbSource?.url;    
-
+  }, [formState, submit]);
 
   return (
     <Page>
-    <ui-title-bar title={formState.id !== "new" ? "Edit 3D model" : "Add new 3D model"}>
-      <button variant="breadcrumb" onClick={() => navigate("/app")}>
-        Models
-      </button>
-    </ui-title-bar>
-    <Layout>
-    <Layout.Section>
-        <Card>
+      <ui-title-bar
+        title={formState.id !== "new" ? "Edit 3D model" : "Add new 3D model"}
+      >
+        <button variant="breadcrumb" onClick={() => navigate("/app")}>
+          Models
+        </button>
+      </ui-title-bar>
+
+      <Layout>
+        <Layout.Section>
+          <ModelPreview
+            modelUrl={formState.modelUrl}
+            settings={settings}
+          />
+        </Layout.Section>
+
+        <Layout.Section variant="oneThird">
           <BlockStack gap="500">
-            <Text as="h2" variant="headingLg">
-              3D Model Preview
-            </Text>
-            {(modelUrl || formState.modelUrl) ? (
-              <ThreeJSViewer modelUrl={modelUrl || formState.modelUrl} />
-            ) : (
-              <BlockStack gap="200" alignment="center">
-                <Text as="p" variant="bodyMd" color="subdued">
-                  No model to preview
-                </Text>
-                {formState.id === "new" && (
-                  <Text as="p" variant="bodyMd" color="subdued">
-                    Upload a model to see the preview
-                  </Text>
-                )}
-              </BlockStack>
-            )}
+            <ProductSelector
+              product={formState.product}
+              onSelectProduct={handleSelectProduct}
+            />
+            <ModelControls
+              settings={settings}
+              onSettingChange={handleSettingChange}
+              onPositionChange={() => { }}
+              onSaveCameraPosition={handleSaveCameraPosition}
+            />
+            <ModelUploader
+              formState={formState}
+              onFileUpload={handleFileUpload}
+            />
           </BlockStack>
-        </Card>
-      </Layout.Section>
-      <Layout.Section variant="oneThird">
-        <BlockStack gap="500">
-          <Card>
-            <BlockStack gap="500">
-              <InlineStack align="space-between">
-                <Text as="h2" variant="headingLg">
-                  Products
-                </Text>
-                <Button variant="plain" onClick={selectProduct}>
-                  {formState.products?.length ? 'Change products' : 'Select products'}
-                </Button>
-              </InlineStack>
-              {formState.products?.length > 0 ? (
-                <BlockStack gap="200">
-                  {formState.products.map(product => (
-                    <Text key={product.id} as="span" variant="bodyMd">
-                      {product.title}
-                    </Text>
-                  ))}
-                </BlockStack>
-              ) : (
-                <Text as="p" variant="bodyMd" color="subdued">
-                  No products selected
-                </Text>
-              )}
-            </BlockStack>
-          </Card>
-          <Card>
-            <BlockStack gap="500">
-              <Text as="h2" variant="headingLg">
-                {formState.id !== "new" ? "Update 3D Model" : "Upload 3D Model"}
-              </Text>
-              <ModelDropZone 
-                onFileUpload={(file) => {
-                  setFormState({
-                    ...formState,
-                    modelFile: file,
-                    modelFileName: file.name
-                  });
-                }}
-                currentModel={formState.id !== "new" ? {
-                  url: formState.modelUrl,
-                  filename: formState.modelFileName
-                } : null}
-              />
-            </BlockStack>
-          </Card>
-        </BlockStack>
-      </Layout.Section>
-      <Layout.Section>
-        <PageActions
-          primaryAction={{
-            content: "Save",
-            loading: isSaving,
-            disabled: !isDirty || isSaving,
-            onAction: handleSave,
-          }}
-        />
-      </Layout.Section>
-    </Layout>
-  </Page>
+        </Layout.Section>
+
+        <Layout.Section>
+          <PageActions
+            primaryAction={{
+              content: "Save",
+              loading: nav.state === "submitting",
+              disabled: !isDirty || nav.state === "submitting",
+              onAction: handleSave,
+            }}
+          />
+        </Layout.Section>
+      </Layout>
+    </Page>
   );
 }
