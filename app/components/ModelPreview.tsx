@@ -1,6 +1,5 @@
-import React from 'react';
 import { Card, BlockStack, Text } from '@shopify/polaris';
-import ThreeJSViewer from './threejs-viewer';
+import ThreeJSViewer from './ThreeJsViewer';
 
 interface ModelPreviewProps {
   modelUrl: string;
@@ -15,7 +14,10 @@ export function ModelPreview({ modelUrl, settings }: ModelPreviewProps) {
           3D Model Preview
         </Text>
         {modelUrl ? (
-          <ThreeJSViewer modelUrl={modelUrl} settings={settings} />
+          <ThreeJSViewer 
+            modelUrl={modelUrl} 
+            settings={settings} 
+          />
         ) : (
           <BlockStack gap="200">
             <Text as="p" variant="bodyMd">

@@ -30,3 +30,26 @@ model Session {
   collaborator  Boolean?  @default(false)
   emailVerified Boolean?  @default(false)
 }
+
+model ModelSettings {
+  id            Int       @id @default(autoincrement())
+  shop          String
+  modelUrl      String
+  name          String?
+  cameraFov     Float     @default(75)
+  cameraPositionX Float   @default(3)
+  cameraPositionY Float   @default(3)
+  cameraPositionZ Float   @default(3)
+  cameraTargetX Float     @default(0)
+  cameraTargetY Float     @default(0)
+  cameraTargetZ Float     @default(0)
+  clearcoatRoughness Float @default(0)
+  metalness        Float   @default(1)
+  roughness        Float   @default(0)
+  ambientLight     Boolean @default(false)
+  lightIntensity   Float   @default(1)
+  envMapPath       String  @default("/images/sunflowers_puresky_2k.hdr")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@unique([shop, modelUrl])
+}

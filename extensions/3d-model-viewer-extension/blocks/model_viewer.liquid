@@ -1,0 +1,34 @@
+<div class="webgpu-model-viewer">
+  {% if block.settings.model_url != blank %}
+    <iframe 
+      src="{{ shop.url }}/apps/webgpu-viewer?model={{ block.settings.model_url | escape }}"
+      style="width: 100%; height: 540px; border: none; border-radius: 8px; overflow: hidden;"
+      title="WebGPU 3D Model Viewer"
+      loading="lazy"
+      allow="camera; xr-spatial-tracking;"
+      frameborder="0"
+      sandbox="allow-scripts allow-same-origin"
+      referrerpolicy="origin"
+    >
+    </iframe>
+  {% else %}
+    <div style="padding: 20px; text-align: center;">
+      <p>No 3D model URL provided</p>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "3D Model Viewer",
+  "target": "section",
+  "settings": [
+    {
+      "type": "url",
+      "id": "model_url",
+      "label": "3D Model URL",
+      "info": "Paste the full model URL (e.g., https://cdn.shopify.com/3d/models/...)"
+    }
+  ]
+}
+{% endschema %}

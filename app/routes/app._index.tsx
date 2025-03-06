@@ -10,20 +10,16 @@ import {
   Thumbnail,
   Text,
   Button,
-  Popover,
-  BlockStack,
-  Box,
-  Link,
   IndexFilters,
   useSetIndexFiltersMode,
   IndexFiltersMode,
-  useBreakpoints,
   IndexFiltersProps,
   TabProps,
-
+  InlineStack
 } from "@shopify/polaris";
 import { ImageIcon } from '@shopify/polaris-icons';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import "../styles/index-table.css";
 
 function ClientOnly({ children }) {
   const [hasMounted, setHasMounted] = useState(false);
@@ -46,7 +42,6 @@ export async function loader({ request }) {
     query {
       shop {
         name
-        id
       }
       files(first: 250) {
         nodes {
@@ -73,50 +68,20 @@ export async function loader({ request }) {
           }
         }
       }
-      products(first: 250) {
-        nodes {
-          id
-          title
-          handle
-          media(first: 10) {
-            nodes {
-              ... on Model3d {
-                id
-              }
-            }
-          }
-        }
-      }
     }
   `);
 
   const json = await response.json();
 
   const models = json.data.files.nodes.filter(node => node && Object.keys(node).length > 0) || [];
-  const products = json.data.products.nodes || [];
-
-  // match models and products
-  const modelsWithProducts = models.map(model => {
-    const referencingProducts = products.filter(product =>
-      product.media.nodes.some(media => media.id === model.id)
-    ).map(product => ({
-      id: product.id,
-      title: product.title
-    }));
-
-    return {
-      ...model,
-      products: referencingProducts
-    };
-  });
 
   return {
-    models: modelsWithProducts,
+    models,
     shop: json.data.shop
   };
 }
 
-const ModelTable = ({ models = [], shop }) => {
+const ModelTable = ({ models = [] }) => {
   return (
     <ClientOnly>
       <IndexTable
@@ -129,22 +94,21 @@ const ModelTable = ({ models = [], shop }) => {
           { title: " " },
           { title: "Model Name" },
           { title: "Date Added" },
-          { title: "Size", alignment: 'end' },
-          { title: "References" },
+          { title: "Size" },
           { title: "Actions" }
         ]}
         hasZebraStriping
         selectable={false}
       >
-        {models?.map((model) => (
-          <ModelTableRow key={model.id} model={model} shop={shop} />
+        {models?.map((model, index) => (
+          <ModelTableRow key={model.id} model={model} index={index} />
         ))}
       </IndexTable>
     </ClientOnly>
   );
 };
 
-const ModelTableRow = ({ model, shop }) => {
+const ModelTableRow = ({ model, index }) => {
   const navigate = useNavigate();
 
   const sizeMB = model.originalSource?.filesize
@@ -156,8 +120,8 @@ const ModelTableRow = ({ model, shop }) => {
   const appUrl = `/app/models/${numericId}`;
 
   return (
-    <IndexTable.Row id={model.id}>
-      <IndexTable.Cell>
+    <IndexTable.Row id={model.id} position={index}>
+      <IndexTable.Cell className="thumbnail-cell">
         <Thumbnail
           source={model.preview?.image?.url || ImageIcon}
           alt={model.alt || model.filename}
@@ -175,82 +139,36 @@ const ModelTableRow = ({ model, shop }) => {
         </Text>
       </IndexTable.Cell>
       <IndexTable.Cell>
-        <Text as="span" variant="bodyMd" alignment="end" numeric>
+        <Text as="span" variant="bodyMd" alignment="start" numeric>
           {sizeMB} MB
         </Text>
       </IndexTable.Cell>
       <IndexTable.Cell>
-        <ProductReferences products={model.products || []} shop={shop} />
-      </IndexTable.Cell>
-      <IndexTable.Cell>
-        <Button onClick={() => navigate(appUrl)} size="slim">
-          Edit
-        </Button>
+        <InlineStack gap="300">
+          <Button onClick={() => navigate(appUrl)} size="slim">
+            Edit
+          </Button>
+          <Button
+            onClick={() => {
+              const modelUrl = model.sources?.find(s => s.format === 'glb')?.url;
+              if (modelUrl) {
+                navigator.clipboard.writeText(modelUrl);
+                shopify.toast.show('Model URL copied to clipboard');
+              }
+            }}
+            size="slim"
+            variant="plain"
+          >
+            Copy URL
+          </Button>
+        </InlineStack>
       </IndexTable.Cell>
     </IndexTable.Row>
   );
 };
 
-const ProductReferences = ({ products, shop }) => {
-  const [expanded, setExpanded] = useState(false);
-  const [popoverActive, setPopoverActive] = useState(false);
-
-  const togglePopoverActive = useCallback(() => {
-    setPopoverActive((active) => !active);
-    setExpanded((expanded) => !expanded);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setPopoverActive(false);
-    setExpanded(false);
-  }, []);
-
-  const activator = (
-    <Button
-      variant="monochromePlain"
-      monochrome
-      disclosure={expanded ? 'up' : 'down'}
-      onClick={togglePopoverActive}
-    >
-      {`${products.length} Product${products.length !== 1 ? 's' : ''}`}
-    </Button>
-  );
-
-  const getNumericId = (gid) => gid.split('/').pop();
-
-  return (
-    <Popover
-      active={popoverActive}
-      activator={activator}
-      onClose={handleClose}
-      ariaHaspopup={false}
-    >
-      <Box paddingBlock="200" paddingInline="300">
-        <BlockStack gap="200">
-          <Text as="h6" variant="headingSm">
-            Product{products.length !== 1 ? 's' : ''}
-          </Text>
-          <BlockStack gap="100">
-            {products.map((product) => (
-              <Link
-                key={product.id}
-                url={`https://admin.shopify.com/store/${shop.name}/products/${getNumericId(product.id)}`}
-                removeUnderline
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {product.title}
-              </Link>
-            ))}
-          </BlockStack>
-        </BlockStack>
-      </Box>
-    </Popover>
-  );
-};
-
 export default function Index() {
-  const { models, shop } = useLoaderData();
+  const { models } = useLoaderData();
   const navigate = useNavigate();
   const [sortSelected, setSortSelected] = useState(['filename asc']);
   const [queryValue, setQueryValue] = useState('');
@@ -260,7 +178,6 @@ export default function Index() {
   const tabs: TabProps[] = [
     {
       content: 'All',
-      index: 0,
       id: 'all',
       isLocked: true,
     }
@@ -284,6 +201,7 @@ export default function Index() {
   );
 
   const handleQueryClear = useCallback(() => setQueryValue(''), []);
+  
   const handleFiltersClearAll = useCallback(() => {
     handleQueryClear();
   }, [handleQueryClear]);
@@ -307,7 +225,9 @@ export default function Index() {
           comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
           break;
         case 'size':
-          comparison = a.originalSource.filesize - b.originalSource.filesize;
+          const aSize = a.originalSource?.filesize || a.sources?.[0]?.filesize || 0;
+          const bSize = b.originalSource?.filesize || b.sources?.[0]?.filesize || 0;
+          comparison = aSize - bSize;
           break;
       }
       return direction === 'asc' ? comparison : -comparison;
@@ -349,10 +269,10 @@ export default function Index() {
                   setMode={setMode}
                   autoFocusSearchField={false}
                 />
-                <ModelTable models={sortedModels} shop={shop} />
+                <ModelTable models={sortedModels} />
               </>
             ) : (
-              <EmptyState 
+              <EmptyState
                 heading="No 3D models added yet"
                 action={{
                   content: 'Add 3D model',
