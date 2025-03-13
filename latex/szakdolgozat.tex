@@ -1,0 +1,285 @@
+\documentclass[12pt]{report}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\usepackage[magyar]{babel}
+\usepackage{cleveref}
+% \usepackage[nottoc]{tocbibind}
+
+\usepackage{fancyhdr}
+\usepackage{lipsum}
+
+\usepackage{titlesec}
+  
+% Margók beállítása
+\hoffset -1in
+\voffset -1in
+\oddsidemargin 35mm
+\textwidth 150mm
+\topmargin 15mm
+\headheight 10mm
+\headsep 5mm
+\textheight 237mm
+
+
+% Oldalszám style
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyfoot[R]{\thepage}
+    \renewcommand{\headrulewidth}{0pt} % remove line from header
+}
+
+
+\begin{document}
+	
+	% Kötéstábla (belső borító)
+        \thispagestyle{empty}
+        \begin{center}
+            {\Large\bf Szegedi Tudományegyetem}
+            
+            \vspace{0.5cm}
+            
+            {\Large\bf Informatikai Intézet}
+            
+            \vspace*{8.5cm}
+            
+            {\Huge\bf SZAKDOLGOZAT}
+            
+            \vspace*{7cm}
+            
+            {\LARGE\bf Hőgye Szabolcs Attila}
+            
+            \vspace*{0.6cm}
+            
+            {\Large\bf 2025}
+        \end{center}
+        
+        % Címoldal
+        \newpage
+        \thispagestyle{empty}
+        \begin{center}
+        \vspace*{1cm}
+        {\Large\bf Szegedi Tudományegyetem}
+        
+        \vspace{0.5cm}
+        
+        {\Large\bf Informatikai Intézet}
+        
+        \vspace*{3.8cm}
+        
+        {\LARGE\bf Shopify 3D model viewer integráció WebGPU-val}
+        
+        \vspace*{3.6cm}
+        
+        {\Large Szakdolgozat}
+        
+        \vspace*{4cm}
+        
+        {\large
+        \begin{tabular}{c@{\hspace{4cm}}c}
+        \emph{Készítette:}              &\emph{Témavezető:}\\
+        \bf{Hőgye Szabolcs Attila}      &\bf{Dr. Balogh Gergő}\\
+        programtervező informatikus     &egyetemi docens\\
+        szakos hallgató&
+        \end{tabular}
+        }
+        
+        \vspace*{2.3cm}
+        
+        {\Large
+        Szeged
+        \\
+        \vspace{2mm}
+        2025
+        }
+        \end{center}
+	
+	    % Feladatkiírás
+        \clearpage
+        \pagestyle{plain}
+        \chapter*{Feladatkiírás}
+        \setcounter{page}{2}
+        \addcontentsline{toc}{section}{Feladatkiírás}
+        Tématerv?
+
+        % Tartalmi összefoglaló
+        \newpage
+	    \chapter*{Tartalmi összefoglaló}
+	    \addcontentsline{toc}{section}{Tartalmi összefoglaló}
+
+            A tartalmi összefoglalónak tartalmaznia kell (rövid, legfeljebb egy oldalas, összefüggő megfogalmazásban)
+            a következőket: a téma megnevezése, a megadott feladat megfogalmazása - a feladatkiíráshoz viszonyítva -,
+            a megoldási mód, az alkalmazott eszközök, módszerek, az elért eredmények, kulcsszavak (4-6 darab).
+            
+            Az összefoglaló nyelvének meg kell egyeznie a dolgozat nyelvével. Ha a dolgozat idegen nyelven készül,
+            magyar nyelvű tartalmi összefoglaló készítése is kötelező (külön lapon), melynek terjedelmét a TVSZ szabályozza.
+            
+        % Tartalomjegyzék
+        \newpage
+        \addcontentsline{toc}{section}{Tartalomjegyzék}
+        \tableofcontents
+
+	
+        \chapter*{Bevezetés}
+        \addcontentsline{toc}{chapter}{Bevezetés}
+
+        
+        % Napjainkban a digitalizáció felgyorsulása miatt egyre inkább egy párhuzamos digitális világ kezd kialakulni. A 2020-as években a pandémia tovább gyorsította ezt a folyamatot, széles körben elterjedtek a távmunkát támogató megoldások, az étterembe/boltba járást részben felváltotta az online rendelés és házhoz szállítás, továbbá az e-kereskedelem is jelentős növekedésnek indult. Manapság az áruforgalom jelentős része már online rendeléseken keresztül zajlik.
+        
+        A digitalizáció felgyorsulása miatt napjainkban az online webáruházak száma folyamatosan növekszik és hatalmas versenyt folytatnak a vásárlók figyelmének megnyeréséért. A technológiai fejlődés lehetővé tette, hogy a webshopok egyre nagyobb felbontású képekkel és videókkal reprezentálják a termékeiket. Később megjelentek a 3D-s termékmegjelenítések is, amelyek még részletesebb és valósághűbb vizuális élményt kínálnak a vásárlóknak, tovább fokozva az online böngészés interaktivitását.
+        Bár ezek a fejlett vizualizációs megoldások még nem terjedtek el széles körben, főként a drága grafikusi munka költségei miatt, egyre több webáruház törekszik arra, hogy kitűnjön a versenytársai közül.
+        
+        Szakdolgozatomban egy 3D modellnézegető alkalmazást fejlesztek az egyik legnépszerűbb e-kereskedelmi platformra, a Shopify-ra. Ez az alkalmazás kiterjeszti a Shopify funkcionalitását és a WebGPU technológia segítségével igyekszik kiaknázni a modern képalkotó eljárásokban rejlő lehetőségeket. Bár a jelenlegi böngészős grafikai technológiák (például a WebGL) elegendőek egyszerűbb 3D modellek megjelenítésére, a webshopok közötti kiélezett verseny egyre részletesebb és valósághűbb vizualizációkat követel meg. A költségek csökkentésének érdekében mesterséges intelligenciával generált vagy 3D szkennerekkel létrehozott modellek jellemzően sokkal összetettebbek, jóval több geometriából állnak, ezért webes megjelenítésük kihívást jelent. A WebGPU ezen a téren komoly előrelépést kínál, mivel hatékonyabban használja ki a grafikus hardverek teljesítményét és közvetlenebb hozzáférést biztosít a videokártyák erőforrásaihoz.
+        
+        Egyes mobilkészülékek már képesek valós időben 3D-s tartalmak megjelenítésére, például bútorok virtuális elhelyezésére egy szobában a telefon kameráján keresztül. Az ilyen alkalmazások WebGPU-alapú implementációja jelentős teljesítménynövekedést eredményezhet, amely különösen fontos lehet az online kereskedelemben. Mindez azt vetíti előre, hogy a jövőben egyre virtuálisabb világ vár ránk, ahol a részletgazdag és valósághű megjelenítés kulcsszerepet játszik.
+        
+        Szakdolgozatom célja egy olyan WebGPU-alapú 3D megjelenítő alkalmazás létrehozása, amely bevezeti a legújabb technológiát a Shopify platformra. Nyílt forráskódú projektként kiindulópontot nyújthat további fejlesztésekhez, például AR-alapú megoldásokhoz, termékkonfigurátorokhoz vagy más interaktív 3D-s alkalmazásokhoz. További célom a WebGL és a WebGPU közötti teljesítménybeli különbségek szemléltetése olyan példákon keresztül, amelyek a mindennapi online vásárlás során is relevánsak lehetnek. Mivel a WebGPU technológia jelenleg még kísérleti fázisban van és támogatottsága korlátozott, az alkalmazásomban biztosítani fogom a visszaállást a jól bevált, stabilabb WebGL2-re, ha a WebGPU nem érhető el.
+        
+	    \chapter{3D megjelenítés az e-kereskedelemben}
+        \section{Webes 3D technológiák evolúciója}
+        \subsection{WebGL története és jelentősége}
+
+        A WebGL (Web-based Graphics Library) megjelenésekor egy forradalmian új technológiának számított a webfejlesztés világában, amely lehetővé tette a 3D grafika megjelenítését a böngészőkben anélkül, hogy külső bővítményeket kellett volna telepíteni. Ezelőtt az egyik legelterjedtebb megoldás az Adobe Flash volt, ami számos korláttal rendelkezett, mert nem nyújtott közvetlen hozzáférést a grafikus hardverekhez. Ezzel szemben a WebGL egy olyan API (Application Programming Interface), ami a JavaScript programozási nyelvet egészíti ki háromdimenziós számítógépes grafikai képességekkel. A HTML5 canvas elemének kontextusát használja, amely lehetővé teszi, hogy a fejlesztők a DOM (Document Object Model) interfészeken keresztül férjenek hozzá a grafikai funkciókhoz, így a WebGL könnyen integrálható a meglévő webes technológiákkal. Az OpenGL ES 2.0-án alapul, ami az OpenGL (Open Graphics Library) beágyazott rendszerekre optimalizált változata. Emiatt a gyorsaság is a WebGL egyik erőssége, mivel a modellezés során a számítások nagy részéhez közvetlenül a grafikus kártyát használja, ami hatékonyabb erőforrás-kihasználást és jobb teljesítményt tesz lehetővé, különösen a komplex 3D megjelenítéseknél.
+        
+        A WebGL 1.0-ás verziója 2011-ben látott napvilágot, melynek fejlesztéséért a Khronos Group elnevezésű nonprofit konzorcium a felelős, amely többek között az OpenGL és OpenCL szabványok mögött is áll. 2013-ban kezdődött meg a WebGL 2.0 specifikáció fejlesztése, amelyet végül 2017 januárjában fejeztek be. Ez már az OpenGL ES 3.0-án alapszik, ami amellett, hogy biztosítja a kompatibilitást a korábbi verziókkal, további API-kat vezetett be a még hatékonyabb és jobb minőségű 3D megjelenítés érdekében.
+        Böngészőtámogatottsága fokozatosan terjedt el, kezdetben csak egyes böngészők fejlesztői verzióban volt elérhető, de mára már minden modern böngészőnek a szerves része asztali és mobil eszközökön egyaránt. Rengeteg webalkalmazás és online játék alapját képezi, mivel a fejlesztők számára olyan további eszközök is elérhetővé váltak, mint például a Three.js javascript könyvtár, amelyek egyszerűsítik a WebGL használatát és lehetővé teszik az interaktív 3D animációk egyszerűbb létrehozását.
+        
+        \subsection{Webes 3D technológiák}
+
+        A WebGL technológiára épülő javascript könyvtárak forradalmasították a webalkalmazások vizuális képességeit, elérhetővé téve az interakív, komplex 3D tartalmak megjelenítését a feljlesztők szélesebb körében. Ezek a könyvtárak absztrahálják a WebGL alacsony szintű komplexitását, így a fejlesztők könnyebben hozhatnak létre látványos 3D-s alkalmazásokat. Míg egy natív WebGL alkalmazás esetében egy egyszerű kocka renderelése több mint 200 sor kódot igényelhet, addig a könyvtárak segítségével ugyanez jelentősen kevesebb sor kóddal megoldható.
+        
+        A Three.js az egyik legelterjedtebb és legnépszerűbb nyílt forráskódú függvénykönyvtár, melynek első verziója 2010-ben jelent meg és azóta is aktív fejlesztés alatt áll, rendszeresen frissülő verziókkal. Rendelkezik beépített 2D és 3D geometriákkal, valamint saját geometriák létrehozására is lehetőséget ad. Különböző anyagtípusok és textúrázási lehetőségek állnak rendelkezésre, változatos fényforrásokat és árnyéktechnikákat támogat, amik segítségével realisztikus felületeket és élethű megvilágítási környezeteket lehet szimulálni. A kameramozgások egyszerűen kezelhetők, perspektívikus és ortografikus kamerák is implementálhatók, továbbá támogatja az egér- és billentyűzetkezelést, lehetővé téve az interaktív alkalmazások fejlesztését. A komplex mozgások és átmenetek létrehozására szolgáló animációs rendszere pedig dinamikus tartalmak fejlesztését teszi lehetővé. 
+        
+        Külső programokból (például Blender) exportált 3D modellek betöltésére is van lehetőség, így a más szoftverekben készített modellek egyszerűen felhasználhatóak egy Three.js projektben. Gyakran használják 3D-s webes játékok, interaktív termék konfigurátorok készítésére vagy művészeti projektek és vizualizációk létrehozására. Előnyei közé tartozik a többi 3D-s könyvtárhoz képest a gyorsabb tanulási görbe, viszonylag kevés idő alatt már látványos eredményeket lehet vele elérni. API-ja beszédes és könnyen érthető, kezdő fejlesztőknek kifejezetten ajánlott. Kiváló dokumentációval és aktív közösségi támogatással rendelkezik, ennek köszönhetően a felmerülő problémákra és kérdésekre nagy valószínűséggel gyorsan megtalálhatjuk a választ. 
+        
+        A másik, szintén ingyenes és nyílt forráskódú javascript könyvtár a Babylon.js, ami már inkább egy valós idejű 3D renderelő motornak tekinthető. 2013-ban jelent meg, eredetileg két Microsoftnál dolgozó alkalmazott fejlesztette ki a szabadidejében, mielőtt a cég hivatalosan is a szárnyai alá vette. Hasonlóan a Three.js-hez WebGL-t és HTML5-öt használ, de míg az előbbi inkább a 3D animációkra fókuszál, a Babylon.js a fotorealisztikus megjelenésre helyezi a hangsúlyt. Nagy előnye a beépített fizikai motor, amely valósághű fizikai szimulációkat tesz lehetővé, valamint beépített post-processing képességekkel is rendelkezik. A könyvtár nagyobb hangsúlyt helyez a minőségre, ami befolyásolhatja a teljesítményt, de összetettebb alkalmazások esetén előnyös lehet. A fejlesztési idő és a tanulási görbe hosszabb a Three.js-hez képest, valamint a közössége is kisebb, de ezt ellensúlyozza a stabil fejlesztői háttér a Microsoft támogatásának köszönhetően.
+
+        Ezeken kívül még számos könyvtár létezik különböző 3D-s problémákra specializálódva, mint például a Cannon.js, ami a fizikai szimulációkra ad megoldást, vagy az A-Frame, ami egy HTML-alapú VR keretrendszer, amelyet virtuális valóságok létrehozására lehet használni.
+        
+        \section{Üzleti hatékonyság}
+        \subsection{Konverziós ráta növekedés (CRO)}
+
+        A konverziós ráta azt az arányt fejezi ki, hogy hány felhasználó hajt végre egy kívánt cselekvést az adott weboldalon. Ez általában a vásárlásra értendő, de gyakran használatos egyéb cselekvésekre is, mint például hírlevélre való feliratkozás vagy egy termék kosárba helyezése. A konverziós ráta optimalizálása (CRO) az egyik legfontosabb eleme egy webáruház sikerességének. Számos módszer létezik ennek az arányszámnak a növelésére, ezen technikák közé tartozik a 3D megjelenítés is, mivel hatékonyan ösztönzi a vásárlói döntéshozatalt. 
+
+        A Shopify kutatásai szerint a 3D vizualizációval ellátott termékoldalak akár 27\%-kal több vásárlást eredményezhetnek, míg az AR (kiterjesztett valóság) használata akár 200\%-os konverziónövekedést is okozhat. A 3D megjelenítőket tartalmazó oldalak esetében a látogatók hosszabb időt töltenek a termékoldalak böngészésével, ami nagy mértékben növeli az elköteleződést és csökkenti a visszafordulási arányt. 
+        
+        \subsection{Vásárlói élmény javítása}
+
+        Az online vásárlás legnagyobb kihívása, hogy a vásárlók nem tudják fizikailag megérinteni és kipróbálni a terméket. A 3D megjelenítés és a kiterjesztett valóság ezt a hátrányt hivatott orvosolni azzal, hogy lehetőséget biztosít a termékek interaktív felfedezésére. A 3D modellek lehetővé teszik a termékek minden szögből való megvizsgálását, a részletek, textúrák és arányok pontosabb megértését, emiatt a vásárlók sokkal részletesebb és élethűbb képet kapnak, mint a hagyományos statikus képek vagy videók által. Ez különösen fontos az olyan termékeknél, amelyek nagyobb értékűek vagy alaposabb megfontolást igényelnek, például bútorok vagy elektronikai cikkek esetében.
+
+        A kiterjesztett valóság további előnye, hogy a vásárlók saját környezetükben helyezhetik el a termékeket, így valós időben láthatják, hogyan illeszkednének azok az otthonukba vagy életstílusukhoz. Például egy bútoráruház AR alkalmazásán keresztül a vásárlók megjeleníthetik a termékeket a saját nappalijukban, és ellenőrizhetik, hogy azok méretben és dizájnban megfelelnek-e az elképzeléseiknek.
+        
+        Az interaktív vásárlási élmény nemcsak szórakoztatóbbá teszi a böngészést, hanem csökkenti a vásárlási bizonytalanságot is. A részletesebb termékinformációk birtokában a vásárlók magabiztosabb döntéseket hozhatnak, ami csökkenti a vásárlás utáni elégedetlenséget és a visszaküldések számát.
+        
+        \subsection{Visszaküldések csökkenése}
+
+        Az e-kereskedelem egyik legnagyobb költségtényezője a termékvisszaküldések kezelése. A vásárlók gyakran élnek a visszaküldés lehetőségével, ha a termék nem felel meg az elvárásaiknak, ami nem csak logisztikai terhet jelent a kereskedők számára, hanem csökkenti a vásárlói elégedettséget is. A 3D megjelenítés és az AR technológia hatékony megoldást kínál erre a problémára is, mivel segítenek a vásárlóknak reálisabb elvárásokat kialakítani a termékekkel kapcsolatban.
+
+        Például a virtuális kipróbálás lehetősége révén a vásárlók pontosabb képet kapnak a termék méretéről, színéről és funkcionalitásáról. Egy ruházati cikk esetében például a vásárló virtuálisan felpróbálhatja az adott darabot, és megnézheti, hogy hogyan mutat rajta. A konfigurátorok és testreszabási lehetőségek szintén hozzájárulnak a visszaküldések csökkentéséhez, mert ha a vásárlók saját igényeik szerint alakíthatják a termékeket (például szín és anyag választással vagy egyedi méretezéssel), akkor kisebb eséllyel fordulhat elő, hogy nem elégedettek a kiszállított termékkel.
+        
+        A visszaküldések csökkentése nemcsak költségmegtakarítást eredményez, hanem fenntarthatósági szempontból is előnyös. Kevesebb visszaküldés kevesebb szállítást és kevesebb hulladékot jelent, ami hozzájárul a környezetterhelés csökkentéséhez. Ez a fenntarthatóság iránti elkötelezettség pedig egyre fontosabb szerepet játszik a modern fogyasztói döntésekben.
+
+        
+        % \subsection{Technológiai trendek: mobil eszközök és AR/VR headsetek}
+        \section{Jelenlegi korlátok és kihívások}
+        \subsection{Kis modellek, erőforrás és sávszélesség problémák}
+        \subsection{Magas költségek és alacsony elterjedtség}
+        \section{WebGPU: Az új megoldás a webes grafikai kihívásokra}
+        \subsection{Mi az a WebGPU?}
+        \subsection{WebGPU vs WebGL: technológiai összehasonlítás}
+        \subsection{Böngészőtámogatottság és jövőbeli kilátások}
+        
+        \chapter{Shopify e-kereskedelmi platform}\label{ch:shopify}
+        \section{A Shopify szerepe az e-kereskedelemben}
+        \section{3D megjelenítés jelenlegi lehetőségei}
+        \section{Létező alkalmazások elemzése és korlátaik}
+        \section{Üzleti lehetőségek a WebGPU alapú megoldásokkal}
+        
+        \chapter{Az alkalmazás funkciói}
+        \section{Telepítés és hozzáadás a theme editorhoz}
+        \section{Alapvető funkciók megvalósítása}
+        \subsection{Modellek listázása, feltöltése, hozzárendelés termékekhez}
+        \section{Interaktív funkciók}
+        \subsection{Valós idejű előnézet (WebGPU/WebGL)}
+        \subsection{Teljesítmény-minőség összehasonlítás}
+        \section{Testreszabási lehetőségek}
+        \subsection{Forgatás, zoom, világítás beállításai}
+        \subsection{Képernyőképek és kódrészletek}
+
+        \chapter{Az alkalmazás tervezése és fejlesztése}
+        \section{Fejlesztői környezet és technológiai stack}
+        \subsection{Backend}
+        \subsection{Frontend}
+        \section{Az alkalmazás felépítése és működése}
+        \subsection{Könyvtárak, komponensek}
+        \subsection{Shopify integráció}
+        \section{Használt 3D modellek bemutatása}
+        
+        \chapter{Tesztelés és validáció}
+        \section{WebGPU vs WebGL teljesítményének összehasonlítása}
+        \section{Felhasználói elfogadási teszt}
+        
+        \chapter{Összegzés és következtetések}
+        \section{Célkitűzések teljesülésének értékelése}
+        \section{Jövőbeli fejlesztési lehetőségek}
+        \subsection{AR integráció}
+        \subsection{Automatizált modelgenerálás AI-val}
+        
+        \chapter*{Irodalomjegyzék}
+        \addcontentsline{toc}{section}{Irodalomjegyzék}
+        
+        \chapter*{Nyilatkozat}
+        %Üres sor:
+        \addtocontents{toc}{\ }
+        \addcontentsline{toc}{section}{Nyilatkozat}
+        %\hspace{\parindent}
+        
+        % A nyilatkozat szövege más titkos és nem titkos dolgozatok esetében.
+        % Csak az egyik tipusú myilatokzatnak kell a dolgozatban szerepelni
+        % A ponok helyére az adatok értelemszerűen behelyettesídendők es
+        % a szakdolgozat /diplomamunka szo megfeleloen kivalasztando.
+        
+        
+        %A nyilatkozat szövege TITKOSNAK NEM MINŐSÍTETT dolgozatban a következő:
+        %A pontokkal jelölt szövegrészek értelemszerűen a szövegszerkesztőben és
+        %nem kézzel helyettesítendők:
+        
+        \noindent
+        Alulírott \makebox[4cm]{\dotfill} szakos hallgató, kijelentem, hogy a dolgozatomat a Szegedi Tudományegyetem, Informatikai Intézet \makebox[4cm]{\dotfill} Tanszékén készítettem, \makebox[4cm]{\dotfill} diploma megszerzése érdekében.
+        
+        Kijelentem, hogy a dolgozatot más szakon korábban nem védtem meg, saját munkám eredménye, és csak a hivatkozott forrásokat (szakirodalom, eszközök, stb.) használtam fel.
+        
+        Tudomásul veszem, hogy szakdolgozatomat / diplomamunkámat a Szegedi Tudományegyetem Diplomamunka Repozitóriumában tárolja.
+        
+        \vspace*{2cm}
+        
+        \begin{tabular}{lc}
+        Szeged, \today\
+        \hspace{2cm} & \makebox[6cm]{\dotfill} \\
+        & aláírás \\
+        \end{tabular}
+        
+        
+        \vspace*{4cm}
+        
+        %A nyilatkozat szövege TITKOSNAK MINŐSÍTETT dolgozatban a következő:
+        
+        \noindent
+        Alulírott \makebox[4cm]{\dotfill} szakos hallgató, kijelentem, hogy a dolgozatomat a Szegedi Tudományegyetem, Informatikai Intézet \makebox[4cm]{\dotfill} Tanszékén készítettem, \makebox[4cm]{\dotfill} diploma megszerzése érdekében.
+        
+        Kijelentem, hogy a dolgozatot más szakon korábban nem védtem meg, saját munkám eredménye, és csak a hivatkozott forrásokat (szakirodalom, eszközök, stb.) használtam fel.
+        
+        Tudomásul veszem, hogy szakdolgozatomat / diplomamunkámat a TVSZ 4. sz. mellékletében leírtak szerint kezelik.
+        
+        \vspace*{2cm}
+        
+        \begin{tabular}{lc}
+        Szeged, \today\
+        \hspace{2cm} & \makebox[6cm]{\dotfill} \\
+        & aláírás \\
+        \end{tabular}
+        
+        \chapter*{Köszönetnyilvánítás}
+        \addcontentsline{toc}{section}{Köszönetnyilvánítás}
+        
+        Ezúton szeretnék köszönetet mondani \textbf{X. Y-nak} ezért és ezért \ldots
+\end{document}
