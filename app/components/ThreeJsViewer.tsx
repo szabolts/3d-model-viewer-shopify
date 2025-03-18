@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { 
   Button, 
   Popover, 
@@ -8,7 +8,7 @@ import {
 } from '@shopify/polaris';
 import '../styles/threejs-viewer.css';
 import ModelViewer from './ModelViewer';
-import { ModelSettings } from '../types/viewer';
+import { ModelSettings } from '../utils/viewer';
 
 interface ThreeJSViewerProps {
   modelUrl: string;

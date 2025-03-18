@@ -21,7 +21,7 @@ import {
 import { ModelControls } from '../components/ModelControls';
 import { ModelPreview } from '../components/ModelPreview';
 import { ModelUploader } from '../components/ModelUploader';
-import { defaultSettings } from '../types/viewer';
+import { defaultSettings } from '../utils/viewer';
 
 async function waitForMediaReady(admin, mediaId, maxAttempts = 10) {
   for (let i = 0; i < maxAttempts; i++) {

@@ -34,9 +34,20 @@
   gap: 24px;
 }
 
-/* Add styles for control sections */
 .control-section {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.slider-value {
+  min-width: 24px;
+  text-align: right;
+}
+
+.viewer-iframe {
+  width: 100%;
+  height: 540px;
+  border: none;
+  border-radius: 10px;
 }
