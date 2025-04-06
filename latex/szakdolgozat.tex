@@ -4,7 +4,7 @@
 \usepackage[magyar]{babel}
 \usepackage{cleveref}
 % \usepackage[nottoc]{tocbibind}
-
+\usepackage{minted}
 \usepackage{fancyhdr}
 \usepackage{lipsum}
 
@@ -18,14 +18,28 @@
 \topmargin 15mm
 \headheight 10mm
 \headsep 5mm
-\textheight 237mm
+\textheight 230mm
 
+
+% Opcionális stílus beállítások
+\setminted{
+    frame=single,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    breaklines=true,
+}
 
 % Oldalszám style
 \fancypagestyle{plain}{
     \fancyhf{}
     \fancyfoot[R]{\thepage}
     \renewcommand{\headrulewidth}{0pt} % remove line from header
+}
+
+\newcommand{\tartalmi}[1]{%
+  \vspace{1em}%
+  \noindent\textbf{#1:}\\%
 }
 
 
@@ -78,7 +92,7 @@
         \begin{tabular}{c@{\hspace{4cm}}c}
         \emph{Készítette:}              &\emph{Témavezető:}\\
         \bf{Hőgye Szabolcs Attila}      &\bf{Dr. Balogh Gergő}\\
-        programtervező informatikus     &egyetemi docens\\
+        programtervező informatikus     &egyetemi adjunktus\\
         szakos hallgató&
         \end{tabular}
         }
@@ -93,25 +107,43 @@
         }
         \end{center}
 	
-	    % Feladatkiírás
+	% Feladatkiírás
         \clearpage
         \pagestyle{plain}
         \chapter*{Feladatkiírás}
         \setcounter{page}{2}
         \addcontentsline{toc}{section}{Feladatkiírás}
-        Tématerv?
+
+        Az e-kereskedelem dinamikus fejlődése új kihívásokat és lehetőségeket teremt a termékek online bemutatásában, mivel a vásárlók egyre inkább igénylik az interaktív és valósághű termékmegjelenítést, amely mélyebb betekintést nyújt a termékek jellemzőibe fizikai jelenlét nélkül is. A hagyományos statikus képek és szöveges leírások már nem elegendőek a vásárlói élmény maximalizálásához és a versenyképesség fenntartásához, ezért új megoldásokra van szükség. A jelenleg elérhető 3D funkciókat kiterjesztő alkalmazások többsége nem biztosít teljes körű integrációt a Shopify platformmal, felhasználói felületük külön ablakban, a saját domain címükön érhető el, ami megnehezíti a használatukat. Emellett általában fizetősek, az olcsó megoldások betöltési problémákkal küszködnek és nincsen teljesen ingyenes alternatíva.
+        
+        A szakdolgozat célja egy olyan WebGPU technológiára épülő 3D termék megjelenítő alkalmazás fejlesztése, amely ingyenes és nyílt forráskódú, ugyanakkor versenyképes alternatívát kínál a piacon. Az integráció az új generációs grafikai API előnyeit kihasználva vizuálisan jobb minőségű megjelenítést nyújthat, mint a hagyományos WebGL alapú megoldások, miközben biztosítja a zökkenőmentes integrációt a Shopify platformba. A projekt fontos része egy felhasználóbarát kezelőfelület kialakítása, amely lehetővé teszi a webáruház-tulajdonosok számára, hogy könnyedén kezeljék a 3D modelljeiket anélkül, hogy mély technikai tudásra lenne szükségük.
+        
+        A fejlesztés során korszerű technológiák használata szükséges, mint a TypeScript, React és Three.js, amelyek a Shopify hivatalos dizájnrendszerével együtt biztosítják a konzisztens felhasználói élményt. Továbbá az alkalmazásnak érdemes kihasználnia a Shopify beépített tartalomelosztó hálózatát, amely jelentősen csökkenti a 3D modellek betöltési idejét és optimalizálja a teljesítményt különböző eszközökön és hálózati körülmények között, függetlenül a vásárlók földrajzi helyétől.
+        
+        Az alkalmazás bevezetésével várhatóan javul a vásárlói élmény, csökken a termékvisszaküldések száma, mivel a vásárlók pontosabb képet kapnak a termékekről a vásárlás előtt. A szakdolgozat kitér a fejlesztés során felmerülő technikai kihívásokra, mint a különböző böngészők kompatibilitása vagy a WebGPU és WebGL közötti automatikus váltás megvalósítására a szélesebb körű elérhetőség érdekében. Az elkészült alkalmazás a nyílt forráskódú mivolta miatt alapja lehet olyan további fejlesztéseknek, mint például a kiterjesztett valóság funkciók integrálása vagy interaktív termék konfigurátorok létrehozása.
 
         % Tartalmi összefoglaló
         \newpage
-	    \chapter*{Tartalmi összefoglaló}
-	    \addcontentsline{toc}{section}{Tartalmi összefoglaló}
+	\chapter*{Tartalmi összefoglaló}
+	\addcontentsline{toc}{section}{Tartalmi összefoglaló}
 
-            A tartalmi összefoglalónak tartalmaznia kell (rövid, legfeljebb egy oldalas, összefüggő megfogalmazásban)
-            a következőket: a téma megnevezése, a megadott feladat megfogalmazása - a feladatkiíráshoz viszonyítva -,
-            a megoldási mód, az alkalmazott eszközök, módszerek, az elért eredmények, kulcsszavak (4-6 darab).
-            
-            Az összefoglaló nyelvének meg kell egyeznie a dolgozat nyelvével. Ha a dolgozat idegen nyelven készül,
-            magyar nyelvű tartalmi összefoglaló készítése is kötelező (külön lapon), melynek terjedelmét a TVSZ szabályozza.
+        \tartalmi{A téma megnevezése}
+        3D Model Viewer integráció fejlesztése a Shopify platformra, a WebGPU technológia segítségével.
+        
+        \tartalmi{A megadott feladat megfogalmazása}
+        Egy nyílt forráskódú 3D termékmegjelentető alkalmazás fejlesztése a Shopify e-kereskedelmi platformra, amely az új generációs WebGPU API és a platform legújabb fejlesztői lehetőségeit kiaknázva olyan felhasználói élményt biztosít, amelyet a jelenleg elérhető alternatívák nem nyújtanak. Biztosítja a könnyű használhatóságot mind a vásárlók, mind az áruház-tulajdonosok számára.
+        
+        \tartalmi{Megoldási mód}
+        Egy React alapú webalkalmazás fejlesztése a Shopify-ra, amely zökkenőmentesen integrálódik a webáruház oldalon és az admin kezelői felületen egyaránt. A Shopify Polaris dizájnrendszere mentén elkészített reszponzív felhasználói felület biztosítása mellett a modellek betöltési idejének minimalizálása a platform tartalomelosztó hálózatának segítségével. A WebGPU részleges támogatottsága miatt a mindenhol működőképes WebGL-re való visszaállás biztosítása, amely böngészők és operációs rendszerek esetében kompatibilitási problémák léphetnek fel. 
+        
+        \tartalmi{Eszközök}
+        TypeScript, JavaScript, React, Vite, Three.js, Node.js, Remix, GraphQL, Prisma, PostgreSQL, Blender, WebGPU API, Shopify API-k és SDK-k, Shopify Polaris, Liquid Template Language, Docker, Nginx, GitHub, Jenkins, Cloudflare, Hetzner, Visual Studio Code 
+        
+        \tartalmi{Eredmények}
+        Az elkészült alkalmazás a felhasználó Shopify webáruházába történő telepítése után lehetőséget biztosít 3D modellek feltöltésére és kezelésére, megjelenítésük módosítására. Az admin felületen össze lehet hasonlítani a WebGPU és WebGL különbségeit minden feltöltött modell esetében. A Shopify beépített oldal szerkesztőjében (Online Store), így az éles környezetben működő webáruházban is, bármelyik oldalon és szekcióban meg lehet jeleníteni tetszőleges 3D modellt, az admin beállításainak megfelelően. Kompatibilitási problémák esetén WebGL-re való visszaállás biztosítása.
+        
+        \tartalmi{Kulcsszavak}
+        WebGPU, 3D model viewer, Shopify, React, Three.js, JavaScript
             
         % Tartalomjegyzék
         \newpage
@@ -134,7 +166,7 @@
         
         Szakdolgozatom célja egy olyan WebGPU-alapú 3D megjelenítő alkalmazás létrehozása, amely bevezeti a legújabb technológiát a Shopify platformra. Nyílt forráskódú projektként kiindulópontot nyújthat további fejlesztésekhez, például AR-alapú megoldásokhoz, termékkonfigurátorokhoz vagy más interaktív 3D-s alkalmazásokhoz. További célom a WebGL és a WebGPU közötti teljesítménybeli különbségek szemléltetése olyan példákon keresztül, amelyek a mindennapi online vásárlás során is relevánsak lehetnek. Mivel a WebGPU technológia jelenleg még kísérleti fázisban van és támogatottsága korlátozott, az alkalmazásomban biztosítani fogom a visszaállást a jól bevált, stabilabb WebGL2-re, ha a WebGPU nem érhető el.
         
-	    \chapter{3D megjelenítés az e-kereskedelemben}
+	\chapter{3D megjelenítés az e-kereskedelemben}
         \section{Webes 3D technológiák evolúciója}
         \subsection{WebGL története és jelentősége}
 
@@ -145,22 +177,24 @@
         
         \subsection{Webes 3D technológiák}
 
-        A WebGL technológiára épülő javascript könyvtárak forradalmasították a webalkalmazások vizuális képességeit, elérhetővé téve az interakív, komplex 3D tartalmak megjelenítését a feljlesztők szélesebb körében. Ezek a könyvtárak absztrahálják a WebGL alacsony szintű komplexitását, így a fejlesztők könnyebben hozhatnak létre látványos 3D-s alkalmazásokat. Míg egy natív WebGL alkalmazás esetében egy egyszerű kocka renderelése több mint 200 sor kódot igényelhet, addig a könyvtárak segítségével ugyanez jelentősen kevesebb sor kóddal megoldható.
+        A WebGL technológiára épülő javascript könyvtárak forradalmasították a webalkalmazások vizuális képességeit, elérhetővé téve az interaktív, komplex 3D tartalmak megjelenítését a feljlesztők szélesebb körében. Ezek a könyvtárak leegyszerűsítik a WebGL alacsony szintű komplexitását, így a fejlesztők akár mélyebb 3D matematikai ismeretek nélkül is képesek látványos grafikai megoldásokat létrehozni és ennek köszönhetően gyorsabban juthatnak el a prototípustól a kész termékig..
         
         A Three.js az egyik legelterjedtebb és legnépszerűbb nyílt forráskódú függvénykönyvtár, melynek első verziója 2010-ben jelent meg és azóta is aktív fejlesztés alatt áll, rendszeresen frissülő verziókkal. Rendelkezik beépített 2D és 3D geometriákkal, valamint saját geometriák létrehozására is lehetőséget ad. Különböző anyagtípusok és textúrázási lehetőségek állnak rendelkezésre, változatos fényforrásokat és árnyéktechnikákat támogat, amik segítségével realisztikus felületeket és élethű megvilágítási környezeteket lehet szimulálni. A kameramozgások egyszerűen kezelhetők, perspektívikus és ortografikus kamerák is implementálhatók, továbbá támogatja az egér- és billentyűzetkezelést, lehetővé téve az interaktív alkalmazások fejlesztését. A komplex mozgások és átmenetek létrehozására szolgáló animációs rendszere pedig dinamikus tartalmak fejlesztését teszi lehetővé. 
         
         Külső programokból (például Blender) exportált 3D modellek betöltésére is van lehetőség, így a más szoftverekben készített modellek egyszerűen felhasználhatóak egy Three.js projektben. Gyakran használják 3D-s webes játékok, interaktív termék konfigurátorok készítésére vagy művészeti projektek és vizualizációk létrehozására. Előnyei közé tartozik a többi 3D-s könyvtárhoz képest a gyorsabb tanulási görbe, viszonylag kevés idő alatt már látványos eredményeket lehet vele elérni. API-ja beszédes és könnyen érthető, kezdő fejlesztőknek kifejezetten ajánlott. Kiváló dokumentációval és aktív közösségi támogatással rendelkezik, ennek köszönhetően a felmerülő problémákra és kérdésekre nagy valószínűséggel gyorsan megtalálhatjuk a választ. 
         
-        A másik, szintén ingyenes és nyílt forráskódú javascript könyvtár a Babylon.js, ami már inkább egy valós idejű 3D renderelő motornak tekinthető. 2013-ban jelent meg, eredetileg két Microsoftnál dolgozó alkalmazott fejlesztette ki a szabadidejében, mielőtt a cég hivatalosan is a szárnyai alá vette. Hasonlóan a Three.js-hez WebGL-t és HTML5-öt használ, de míg az előbbi inkább a 3D animációkra fókuszál, a Babylon.js a fotorealisztikus megjelenésre helyezi a hangsúlyt. Nagy előnye a beépített fizikai motor, amely valósághű fizikai szimulációkat tesz lehetővé, valamint beépített post-processing képességekkel is rendelkezik. A könyvtár nagyobb hangsúlyt helyez a minőségre, ami befolyásolhatja a teljesítményt, de összetettebb alkalmazások esetén előnyös lehet. A fejlesztési idő és a tanulási görbe hosszabb a Three.js-hez képest, valamint a közössége is kisebb, de ezt ellensúlyozza a stabil fejlesztői háttér a Microsoft támogatásának köszönhetően.
+        Egy másik, szintén ingyenes és nyílt forráskódú javascript könyvtár a Babylon.js, ami már inkább egy valós idejű 3D renderelő motornak tekinthető. 2013-ban jelent meg, eredetileg két Microsoftnál dolgozó alkalmazott fejlesztette ki a szabadidejében, mielőtt a cég hivatalosan is a szárnyai alá vette. Hasonlóan a Three.js-hez WebGL-t és HTML5-öt használ, de míg az előbbi inkább a 3D animációkra fókuszál, a Babylon.js a fotorealisztikus megjelenésre helyezi a hangsúlyt. Nagy előnye a beépített fizikai motor, amely valósághű fizikai szimulációkat tesz lehetővé, valamint beépített post-processing képességekkel is rendelkezik. A könyvtár nagyobb hangsúlyt helyez a minőségre, ami befolyásolhatja a teljesítményt, de összetettebb alkalmazások esetén előnyös lehet. A fejlesztési idő és a tanulási görbe hosszabb a Three.js-hez képest, valamint a közössége is kisebb, de ezt ellensúlyozza a stabil fejlesztői háttér a Microsoft támogatásának köszönhetően.
+
+        (PlayCanvas?)
 
         Ezeken kívül még számos könyvtár létezik különböző 3D-s problémákra specializálódva, mint például a Cannon.js, ami a fizikai szimulációkra ad megoldást, vagy az A-Frame, ami egy HTML-alapú VR keretrendszer, amelyet virtuális valóságok létrehozására lehet használni.
         
         \section{Üzleti hatékonyság}
         \subsection{Konverziós ráta növekedés (CRO)}
 
-        A konverziós ráta azt az arányt fejezi ki, hogy hány felhasználó hajt végre egy kívánt cselekvést az adott weboldalon. Ez általában a vásárlásra értendő, de gyakran használatos egyéb cselekvésekre is, mint például hírlevélre való feliratkozás vagy egy termék kosárba helyezése. A konverziós ráta optimalizálása (CRO) az egyik legfontosabb eleme egy webáruház sikerességének. Számos módszer létezik ennek az arányszámnak a növelésére, ezen technikák közé tartozik a 3D megjelenítés is, mivel hatékonyan ösztönzi a vásárlói döntéshozatalt. 
+        A konverziós ráta az e-kereskedelmi metrikák egyik legfontosabb mutatószáma, amely számszerűsíti a weboldal hatékonyságát az üzleti célok elérésében. Matematikailag kifejezve, ez az a százalékos arány, amely megmutatja, hogy a weboldal látogatói közül hányan hajtanak végre egy előre meghatározott értékes cselekvést. Ez általában a vásárlásra értendő, de gyakran használatos egyéb cselekvésekre is, mint például hírlevélre való feliratkozás vagy egy termék kosárba helyezése. A konverziós ráta optimalizálása (CRO) az egyik legfontosabb eleme egy webáruház sikerességének. Számos módszer létezik ennek az arányszámnak a növelésére, ezen technikák közé tartozik a 3D megjelenítés is, mivel hatékonyan ösztönzi a vásárlói döntéshozatalt. 
 
-        A Shopify kutatásai szerint a 3D vizualizációval ellátott termékoldalak akár 27\%-kal több vásárlást eredményezhetnek, míg az AR (kiterjesztett valóság) használata akár 200\%-os konverziónövekedést is okozhat. A 3D megjelenítőket tartalmazó oldalak esetében a látogatók hosszabb időt töltenek a termékoldalak böngészésével, ami nagy mértékben növeli az elköteleződést és csökkenti a visszafordulási arányt. 
+        A Shopify kutatásai szerint a 3D vizualizációval ellátott termékoldalak akár 27\%-kal több vásárlást eredményezhetnek, míg az AR (kiterjesztett valóság) használata akár 200\%-os konverziónövekedést is okozhat. A 3D megjelenítőket tartalmazó oldalak esetében a látogatók hosszabb időt töltenek a termékoldalak böngészésével, ami nagymértékben növeli az elköteleződést és csökkenti a visszafordulási arányt. 
         
         \subsection{Vásárlói élmény javítása}
 
@@ -174,25 +208,87 @@
 
         Az e-kereskedelem egyik legnagyobb költségtényezője a termékvisszaküldések kezelése. A vásárlók gyakran élnek a visszaküldés lehetőségével, ha a termék nem felel meg az elvárásaiknak, ami nem csak logisztikai terhet jelent a kereskedők számára, hanem csökkenti a vásárlói elégedettséget is. A 3D megjelenítés és az AR technológia hatékony megoldást kínál erre a problémára is, mivel segítenek a vásárlóknak reálisabb elvárásokat kialakítani a termékekkel kapcsolatban.
 
-        Például a virtuális kipróbálás lehetősége révén a vásárlók pontosabb képet kapnak a termék méretéről, színéről és funkcionalitásáról. Egy ruházati cikk esetében például a vásárló virtuálisan felpróbálhatja az adott darabot, és megnézheti, hogy hogyan mutat rajta. A konfigurátorok és testreszabási lehetőségek szintén hozzájárulnak a visszaküldések csökkentéséhez, mert ha a vásárlók saját igényeik szerint alakíthatják a termékeket (például szín és anyag választással vagy egyedi méretezéssel), akkor kisebb eséllyel fordulhat elő, hogy nem elégedettek a kiszállított termékkel.
+        Például a virtuális kipróbálás lehetősége révén a vásárlók pontosabb képet kapnak a termék méretéről, színéről és funkcionalitásáról. Egy ruházati cikk esetében például a vásárló virtuálisan felpróbálhatja az adott darabot, és megnézheti, hogy hogyan mutat rajta. A konfigurátorok és testreszabási lehetőségek szintén hozzájárulnak a visszaküldések csökkentéséhez, mert ha a vásárlók saját igényeik szerint alakíthatják a termékeket (például szín- és anyagválasztással vagy egyedi méretezéssel), akkor kisebb eséllyel fordulhat elő, hogy nem elégedettek a kiszállított termékkel.
         
         A visszaküldések csökkentése nemcsak költségmegtakarítást eredményez, hanem fenntarthatósági szempontból is előnyös. Kevesebb visszaküldés kevesebb szállítást és kevesebb hulladékot jelent, ami hozzájárul a környezetterhelés csökkentéséhez. Ez a fenntarthatóság iránti elkötelezettség pedig egyre fontosabb szerepet játszik a modern fogyasztói döntésekben.
 
         
         % \subsection{Technológiai trendek: mobil eszközök és AR/VR headsetek}
         \section{Jelenlegi korlátok és kihívások}
-        \subsection{Kis modellek, erőforrás és sávszélesség problémák}
-        \subsection{Magas költségek és alacsony elterjedtség}
-        \section{WebGPU: Az új megoldás a webes grafikai kihívásokra}
+
+        A 3D megjelenítés a webáruházakban napjainkra egyre népszerűbbé válik, a nagyobb gyártócégek már évek óta használják a technológiát termékkonfigurátorok és interaktív felhasználói felületek létrehozásához. A járműipartól kezdve a bútoriparon át, a ruházati cikkekig a legtöbb nagy szereplőnek valamilyen formában integrálva van 3D megjelenítés a webáruházaikban. Példának okáért a Nike weboldalán cipőket lehet testre szabni, amit olyan formában gyártanak le, amilyenre a vásárló beállította a termékkonfigurátorban, hasonlóan a Porsche oldalához, ahol az autók felszereltségét és jellemzőit lehet testre szabni. Az IKEA-nál szinte az összes bútort meg lehet nézni 3D-ben is, ahol a vásárló jobban szemügyre veheti a terméket, továbbá elhelyezheti azokat egy előre renderelt 3D-s szobában, vagy ha van erre alkalmas készüléke, a saját otthonában is megnézheti, hogyan fog mutatni az AR-nek köszönhetően. 
+        
+        \subsection{Gazdasági kihívások és implementációs akadályok}
+
+        A 3D modellek készítése továbbra is jelentős költségekkel jár, a kis és közepes vállalkozások általában nem rendelkeznek akkora költségvetéssel, ami ehhez szükséges. A 3D művészek, grafikusok alkalmazása vagy szolgáltatásaiknak igénybe vétele jelentős pénzügyi befektetést igényel, főleg nagy számú termékkészlet esetén. 
+        Bár 2025-ben már léteznek megoldások termékek 3D szkennelésére vagy modellek generálására mesterséges intelligencia segítségével, ezekhez is jellemzően drága eszközök vagy szolgáltatás-előfizetések szükségesek, valamint jelentősen alulmúlják a szakemberek által készített modellek színvonalát. Nem csak az okostelefonnal, de az olcsóbb 3D szkennerekkel készített modellek sem alkalmasak a weben való megjelenítésre, mert a drótvázak túl bonyolultak és a textúrák túl nagy méretűek lesznek. Mindemellett a népszerű e-kereskedelmi platformok korlátozottan támogatják a 3D megjelenítéseket, ezért egyelőre nehéz költséghatékonyan integrálni a funkciókat. A meglévő webshop-platformok és 3D megjelenítési technológiák összekapcsolása speciális szakértelmet igényelnek. Léteznek olyan third-party szolgáltatások, mint például a Zakeke, amelyek ezt az implementációs költséget hivatottak redukálni, de ezek rendre fizetősek és továbbra sem oldják meg a 3D modellek előállítási költségeinek problémáját.
+            
+        \subsection{Technikai korlátok és optimalizációs kihívások}
+
+        A 3D modellek optimalizálása kiemelten fontos a webes megjelenítés esetében, hiszen ez a folyamat teszi lehetővé a fájlméret csökkentését a vizuális minőség megőrzése mellett. A 3D modellek két fő komponensből állnak, a drótvázból, amely a modell szerkezetét poligonokkal írja le és a textúrából, amit a modell realisztikus megjelenítését biztosító képek alkotnak. Az optimalizáció szempontjából ennek a két elemnek az egyensúlya a fontos, ami jelentősen befolyásolja a felhasználói élményt. A poligonok számának csökkentése, azaz a drótváz egyszerűsítése a modell alapvető formájának és részletességének megőrzése mellett biztosítja, hogy az alacsonyabb teljesítményű eszközökön is működőképes maradjon a megjelenítés. Az online vásárlások zöme mobil eszközökön történik, amelyek grafikus feldolgozási kapacitása jelentősen elmarad az asztali számítógépek képességeitől, ami különösen nagy kihívást jelent a komplex 3D modellek renderelése során. Ez arra kényszeríti a fejlesztőket, hogy kompromisszumokat kössenek a vizuális minőség és a teljesítmény között, mivel a nem megfelelően optimalizált modellek akadozó megjelenítést eredményezhetnek. Ezzel párhuzamosan a textúra tömörítése is elengedhetetlen, hogy a modell kisebb fájlmérettel rendelkezzen, ezáltal gyorsabb betöltést tegyen lehetővé a weboldalakon. A nagy méretű 3D modellek lassú betöltése frusztrálhatja a vásárlókat, ami potenciális bevételkieséshez vezethet, továbbá a keresőoptimalizálás szempontjából is negatívan érinti a weboldalak indexelését, ami csökkenti a látogatók számát.
+
+        % Webes es nativ gpu eleres kozotti kulonbseg
+        
+        \section{WebGPU: új megoldás a webes grafikai kihívásokra}
         \subsection{Mi az a WebGPU?}
-        \subsection{WebGPU vs WebGL: technológiai összehasonlítás}
+
+        A WebGPU egy új generációs grafikus API, ami segítségével a böngészők közvetlenül hozzá tudnak férni a modern videokártyák képességeihez, lehetővé téve a nagy teljesítményű grafikai megjelenítést és az általános célú GPU számításokat (GPGPU). A számítógépes grafikák renderelése mellett olyan számításokra is alkalmas, amelyekhez adatok párhuzamos feldolgozásra van szükség, mint például a gépi tanulás, kriptovaluta bányászat vagy a mesterséges intelligencia esetében. Ezen kívül a WebGPU nem korlátozódik kizárólag a böngészőkre, hanem natív könyvtárak és keretrendszerek révén asztali alkalmazásokban is használható, például C++ és Rust segítségével. Szakdolgozatomban a web alapú 3D renderelés szempontjából fogom megvizsgálni a teljesítményét a jelenleg széles körben használt WebGL-hez képest, de a technológia lehetőségei jelentősen túlmutatnak a grafikai felhasználáson.
+        
+        Fejlesztését a Google kezdeményezte 2016-ban, amikor egy új, WebGL-t felváltó API koncepcióját mutatta be. Később az Apple javasolta a WebGPU nevet és alapozta meg a szabványosítási folyamatot, ezt követően a Mozilla is csatlakozott saját elképzeléseikkel, majd 2017-ben létrejött egy W3C közösségi csoport, kifejezetten az API tervezésére. Végül 2018-ban a Google hivatalosan is bejelentette a szabvány támogatását, egyesítve a nagy techvállalatok technológiáit. Így az egyik legfontosabb előnye az lett, hogy hatékonyan illeszkedik a natív GPU API-khoz, mint például a Vulkan, Direct3D vagy a Metal, miközben a webes környezethez is igazodik. A WebGPU architektúrája több absztrakciós réteget tartalmaz, ezzel segítve elő a hatékony kommunikációt a böngésző és hardver között. Egy böngészőben futó webalkalmazás a WebGPU API-n keresztül kér hozzáférést a videókártyához, aminek két főbb komponense a GPUAdapter, ami a fizikai videokártyát és annak a driverét reprezentálja, és a Logikai eszközök (GPUDevice), amelyeken keresztül az alkalmazások hozzáférhetnek a GPU erőforrásaihoz.  Ez biztosítja, hogy több különböző webalkalmazás egyszerre használhassa ugyanazt a fizikai eszközt biztonságosan és izoláltan. Nem közvetlen módon kommunikál a hardverrel, hanem mindig a megfelelő platform-specifikus natív API-t hívja meg, például Windows-on a Vulkan vagy Direct3D 12, macOS és iOS rendszereken a Metal, valamint a Linux és Android esetében a Vulkan API segítségével működik.
+        
+        Jelentős előrelépést kínál a WebGL-hez képest azáltal, hogy támogatja az aszinkron műveleteket és az explicit memóriahasználatot. Emiatt az adatátviteli késleltetések csökkennek, és a fejlesztők nagyobb kontrollt kapnak az erőforrások kezelésében. Mindemellett egy új shader nyelvet használ, amelyet WSGL-nek (WebGPU Shading Language) hívnak, és ezt a rendszer automatikusan lefordítja a megfelelő natív shader formátumra.
+        
         \subsection{Böngészőtámogatottság és jövőbeli kilátások}
+
+        Böngésző támogatottsága még nem teljes körű, csak a Chromium alapú böngészők esetében beszélhetünk teljes kompatibilitásról mobil és asztali környezetekben. A Google Chrome a 2023 májusában kiadott 113-as verziótól kezdve támogatja a WebGPU-t, Windows, ChromeOS és MacOS-en egyaránt. A Microsoft Edge és az Opera böngészővel ugyan ez a helyzet, hiszen ugyanazt a Chromium motort használják, mint a Google Chrome. 
+        Androidon a Chrome 2024 januárjában megjelent 121-es verziója óta elérhető a technológia, az Opera Android pár hónappal később kiadott 81-es verziójától élvez támogatást, illetve a Samsung böngészőben is működik 2024 áprilisa óta.
+        A Firefox mobil eszközökön még nem, asztali környezetekben részleges támogatást nyújt a Firefox Nightly elnevezésű fejlesztői verzióban Windows és Linux rendszereken. 
+        Az Apple Safari böngészőjében csak a Technology Preview névre hallgató fejlesztői kiadásában érhető el részlegesen, még fejlesztés alatt áll. Mivel az iOS rendszereken minden böngésző a Safari motorját hasznája, még a Chrome is, ezért egyáltalán nem működik. 
+        A szakdolgozatomhoz készített alkalmazást Linux rendszeren fejlesztettem, ahol a WebGPU-t kizárólag a "google-chrome-unstable" (Version 133.0.6888.2) böngészővel sikerült működésre bírnom, a következő flagekkel:
+        \begin{minted}{bash}
+        google-chrome-unstable --enable-unsafe-webgpu --enable-features=Vulkan
+        \end{minted}
+        Amikor a WebGL-t bevezették, hasonló ütemben várt elérhetővé, mára pedig minden böngésző és platform teljes körűen támogatja, ezért várhatóan a WebGPU is hasonló fejlődési ívet fog bejárni és előbb-utóbb ez lesz az új sztenderd.
         
         \chapter{Shopify e-kereskedelmi platform}\label{ch:shopify}
         \section{A Shopify szerepe az e-kereskedelemben}
+
+        A Shopify az e-kereskedelem egyik legmeghatározóbb szereplőjévé vált az elmúlt évtizedben, hiszen a kanadai fejlesztők egy rendkívül átgondolt üzleti modellt és technológiai alapot valósítottak meg egy PaaS (Platform as a Service) formájában. A Shopify platformja nemcsak egy webáruház szoftvert kínál, hanem egy komplett infrastruktúrát, amely a legkisebb induló vállalkozásoktól a nagy multinacionális cégekig mindenki számára megfelelő hátteret biztosít. Ez jelentősen csökkenti a belépési küszöböt az online kereskedelem világába, mert a felhasználóknak nem kell foglalkozniuk olyan összetett technikai részletekkel, mint az adatbázis üzemeltetés, szerverek közötti terheléselosztás, felhőalapú tárhely menedzsment vagy akár a fizetési szolgáltatók integrációja. A Shopify sikerének egyik kulcsa, hogy széles célközönséget képes megszólítani, az intuitív felhasználói felület kialakítása miatt technikai előképzettség nélkül is lehetséges működőképes webáruházat létrehozni, valamint a fejlesztők számára is rengeteg lehetőséget kínál. Például egy programozási ismeretekkel nem rendelkező, idősebb korosztályhoz tartozó kiskereskedő ugyanúgy megtalálja a számítását a platformon, mint egy tapasztalt webfejlesztő, aki testreszabott megoldásokat szeretne létrehozni a legújabb technológiákkal. A használatáért havidíjat kell fizetni és tranzakciós költségek is felmerülnek, de összességében még így is sokkal költséghatékonyabb megoldás, mint egy egyedi webáruház fejlesztése és üzemeltetése.
+        
+        \section{A Shopify platform infrastruktúrája és felépítése}
+
+        A Shopify szerver oldali infrastruktúrája a Ruby on Rails keretrendszer köré épül, ami megbízható és jól skálázható alapot biztosít. Relációs adatbázis tekintetében MySQL-t használ, amely a struktúrált adatok tárolására szolgál, mint például a termékek, rendelések adatai és vásárlói információk. Gyorsítótárazásra a Redis, memóriában működő NoSQL adatbázist használja, ezzel gyorsítva az adatlekéréseket és csökkentve az elsődleges adatbázisok terhelését. A Google Cloud Platform-ján futnak a szervereik, amelyekhez Kubernetes konténer-orchesztrátor rendszert alkalmaznak, ami rugalmassá és skálázhatóvá teszi az infrastruktúrát, így képes reagálni a forgalom nagy mértékű ingadozásaira. Ezen kívül a Cloudflare CDN (Content Delivery Network) szolgáltatásával biztosítja, hogy az online áruházak gyorsan betöltődjenek világszerte, függetlenül a vásárló földrajzi helyétől. 
+        
+        Egy webáruházhoz tartozó backend-et a Shopify Admin Dashboard felületén lehet kezelni, ami magába foglal egy tartalomkezelő rendszert (CMS - Content Management System), ahol egész felhasználóbarát módon lehet kezelni az adatbázisok és objektum tárolók adatait, többek között a termékek attribútumait és a hozzájuk tartozó média file-okat, valamint a rendelésekhez kapcsolódó információkat. Emellett számos kereskedelemmel és online megjelenéssel kapcsolatos funkciókat tartalmaz, mint például marketing és a webshop forgalmát monitorozó analitikai eszközök. A logisztikai folyamatok és pénzügyi tranzakciók menedzselésére is rengeteg funkciót kínál, minden ami szükséges lehet az e-kereskedelemben, az megtalálható a platformon. 
+        
+        A webshop frontend-jét, a Shopify kontextusában Storefront-nak hívjuk, ennek szerkesztésre a beépített no-code oldalépítő alkalmazása mellett saját fejlesztésű headless megoldások is rendelkezésre állnak, melyek teljesen más megközelítést kínálnak. Míg az előbbi egy vizuális szerkesztőfelületen keresztül teszi lehetővé az oldalak összeállítását technikai tudás nélkül, addig a Hydrogen névre hallgató headless megoldás teljes fejlesztői szabadságot biztosít, lehetővé téve a testre szabott vásárlói élmények létrehozását. A vizuális felülettel rendelkező oldal szerkesztő a Shopify által kifejlesztett Liquid Template Language-et használja, amelynek köszönhetően rengeteg előre megírt téma közül választhatunk, miközben lehetőségünk van saját kóddal testre szabni ezeket. Ezzel szemben a headless megközelítés a modern React JavaScript könyvtárra épül, ami komponens-alapú fejlesztést, jobb teljesítményt és rugalmasabb felhasználói élmény kialakítást tesz lehetővé. A szakdolgozatom írásának idején a GitHub-on már megjelentek nyilt forráskódú, React alapú no-code oldalépítők is, ami előrevetíti, hogy a jövőben akár a teljes frontend React-ra épülhet.
+        
+        A platform API-központú természetének köszönhetően az üzleti logika teljes mértékben el van különítve megjelenítési rétegtől, így a Liquid alapú frontend könnyedén lecserélhető React-ra. Minden üzleti adat egységesen elérhető központosított API-kon keresztül, amelyek közül a GraphQL vált elsődlegessé, mivel a REST API-kat 2024 októberétől legacy státuszba helyezték át. A GraphQL teljes funkcionalitást kínál, beleértve a korábban csak REST-ben elérhető műveleteket is. A GraphQL előnyei között szerepel a hatékonyabb adatlekérdezés, az egyetlen kérésben több erőforrás lekérésének képessége, valamint a pontos adatkiválasztás lehetősége.
+        
+        A Shopify másik nagy előnye a bővíthetőség, a fejlesztők saját alkalmazásokat és kiterjesztéseket készíthetnek, amelyekkel extra funkciókat adhatnak webshopokhoz. Ezek lehetnek privát jellegűek, egy adott üzlet számára készült megoldások, vagy akár a Shopify App Store-ban közétett, bárki számára elérhető alkalmazások is. Ez az ökoszisztéma folyamatosan bővül és számos innovatív megoldást kínál a kereskedők számára.
+
         \section{3D megjelenítés jelenlegi lehetőségei}
+
+        Bár a Shopify átfogó megoldást kínál az e-kereskedelem számos aspektusához, bizonyos területeken tudatosan hagy nagy teret a külső fejlesztéseknek. Egyelőre ilyen terület a 3D megjelenítés is, ahol a platform alapfunkciói viszonylag korlátozottak, ugyanakkor az App Store-ban elérhető bővítmények révén kibővíthetőek. Ez a stratégia lehetőséget ad a specializált fejlesztésekre, hogy a közösség innovatív megoldásokat hozzon létre, miközben a Shopify a core funkcionalitásra koncentrálhat.
+        
+        A 3D megjelenítés alapvető lehetősége a Shopify rendszerében a modell feltöltés, a termékek média szekciójába közvetlenül feltölthetők GLB vagy USDZ formátumú 3D modellek 500 MB-os méretkorlátig. Ezzel a megoldással egy egyszerű, mégis korlátozott interaktivitással rendelkező beépített 3D megjelenítőt lehet használni, ami nem teszi lehetővé a komplexebb felhasználási eseteket, mint például a termék testreszabás vagy a dinamikus változtatások megjelenítése. Az olyan alapvető beállítások megtalálhatóak, mint a háttérszín kiválasztása, megvilágítás erősségének módosítása és van néhány előre beállított környezet, amelyek módosítják a modellen megjelenő árnyékokat és tükröződéseket. Ezáltal a vásárlók a termékoldalon található képek között megtekinthetik a modellt, körbe tudják forgatni és ki tudják nagyítani. Ezek a funkciók sok esetben nem elegendőek, ezért a leggyakoribb megoldás a specializált 3D és AR alkalmazások használata. 2025-ben számos ilyen megoldás érhető el a Shopify App Store-ban, melyek különböző funkcionalitást és árazást kínálnak.
+        
         \section{Létező alkalmazások elemzése és korlátaik}
-        \section{Üzleti lehetőségek a WebGPU alapú megoldásokkal}
+
+        Az egyik legnépszerűbb 3D megjelenítéssel foglalkozó alkalmazás a "Zakeke – Customizer", ami egy all-in-one eszköz, minden nagyobb e-commerce platformon elérhető. Rendelkezik 3D termékkonfigurátorral, virtuális próba (virtual try-on) funkcióval és egy olyan 2D/3D terméktervezővel, amellyel a vásárlók szöveget és képeket adhatnak hozzá termékekhez, valamint gravírozási effektusok szimulációja is van lehetőség, például fa, acél és üveg felületeken. Kódmentes integrációt kínál a legtöbb szintén kódmentes weboldalszerkesztő platformra, továbbá API dokumentációval is rendelkezik a saját fejlesztésű webáruházakhoz, vagy a kevésbé népszerű platformokhoz. Árazását tekintve havidíja a középmezőnyben helyezkedik el, viszont 1,7-1,9\% tranzakciós díjat számol fel minden testreszabott termék eladása után.
+
+        Az "Angle 3D Configurator" egy kizárólag a Shopify platformhoz készített alkalmazás, főként a termékek 3D-s szerkesztésére és a fotorealisztikus megjelenítésre fókuszál. A Zakeke alkalmazáshoz hasonlóan "no-code" integrációt kínál, viszont ez sincs beágyazva a Shopify admin felületébe, a saját weboldalán keresztül lehet a modelleket feltölteni és testreszabni, majd szinkronizálni az online áruházzal. Havidíja nagyjából a duplája az előzőleg tárgyalt alkalmazásnak, cserébe nem számol fel tranzakciós díjat a termékek megvásárlásakor.
+        
+        A "Spin Studio" névre hallgató alkalmazás a 360 fokos termékforgatásra specializálódott, amely csak látszólag 3D-s megjelenítés, igazából egy meglévő modell van körbefotózva jellemzően 16 különböző perspektívából. Bár kevésbé interaktív, mert csak egy tengely mentén tudják a vásárlók körbeforgatni a termékeket, működése sokkal optimálisabb és gyorsabb betöltést biztosít, mivel a megfelelően tömörített képek jelentősen kisebb méretűek a webre optimalizált modelleknél is. Sajnos a használatához továbbra is szükség van 3D modellekre, hogy azt az alkalmazás automatikusan körbe tudja fotózni, ezért a grafikusi munkára ebben az esetben is szükség van. Havidíjának árazása a legolcsóbb kategóriába tartozik és ingyenes hozzáférést is biztosít 1 db termékmegjelenítéssel bezárólag. 
+        
+        A nagyjából egy tucatnyi App Store-ban megtalálható 3D-vel foglalkozó alkalmazás közül ezek a legnépszerűbbek, a többi megoldás is hasonló funkciókkal terjeszti ki a Shopify képességeit, de jellemzően kevesebb értékeléssel rendelkeznek. Teljesen ingyenes alkalmazás nincs közöttük, némelyik tartalmaz korlátozott ingyenes hozzáférést, de a legtöbb csak előfizetéses konstrukcióban érhető el. A magas árak valószínűleg az üzemeltetés költségei miatt ilyen gyakoriak, mivel a Shopify egy globális, a világ minden pontján működő szolgáltatást kínál, ezért a hozzá fejlesztett alkalmazásoknak is hasonló lefedettséget kell nyújtaniuk a vásárlóiknak, hogy ne legyen gond a betöltés és szerver válaszidők teljesítményével.
+        
+        \section{Üzleti lehetőségek}
+
+        A jelenleg elérhető alkalmazások hiányosságai lehetőséget nyújtanak egy olyan piacképes megoldás létrehozására, amely a WebGPU segítségével technikai előnyt élvez a versenytársakkal szemben. Marketing szempontból is kedvező lehet egy új technológia bevezetése a platformra, valamint a Polaris dizájn rendszernek köszönhetően a Shopify admin felületébe történő integráció is innovatívnak számít a konkurens alkalmazások között. Valószínűsíthető, hogy előbb-utóbb a versenytársak is lecserélik a WebGL-t a modernebb API-ra, amikor teljes mértékben támogatottá válik és a felhasználói felületet is hozzá igazítják a platform irányelveihez. Utóbbi valószínűleg azért nem történt még meg, mert egy viszonylag friss funkciónak számít ez a fajta megközelítés, a Remix app kiterjesztések csak pár éve vannak "production ready" státuszban. Továbbá egy versenyképes árazással garantált sikert lehetne elérni, amit a Shopify meglévő CDN rendszerével könnyedén lehetne biztosítani azáltal, hogy a 3D modellek kiszolgálását a platformra bízzuk, jelentős összegeket megtakarítva az üzemeltetési költségekből. 
+        
+        A legnagyobb kockázati tényező a Shopify rohamos fejlődése, mivel fél évente jönnek ki nagy és átfogó frissítésekkel, ezért nincs garancia arra, hogy az elkövetkező pár évben nem valósítják meg a funkciókat. Ennek ellenére véleményem szerint mindig lehet olyan innovatív megoldásokat fejleszteni, amelyek alkalmazkodva a platform sajátosságaihoz olyan piaci réseket céloznak meg, amelyeket a Shopify alapfunkciói nem fednek le teljesen, így biztosítva a hosszú távú üzleti versenyképességet.
+
         
         \chapter{Az alkalmazás funkciói}
         \section{Telepítés és hozzáadás a theme editorhoz}
@@ -228,7 +324,7 @@
         \addcontentsline{toc}{section}{Irodalomjegyzék}
         
         \chapter*{Nyilatkozat}
-        %Üres sor:
+        %Egy üres sort adunk a tartalomjegyzékhez:
         \addtocontents{toc}{\ }
         \addcontentsline{toc}{section}{Nyilatkozat}
         %\hspace{\parindent}
