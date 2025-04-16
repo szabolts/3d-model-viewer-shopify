@@ -1,5 +1,7 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { ModelSettings, ViewerMessage, defaultSettings } from '../types/viewer';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { ModelSettings, ViewerMessage, defaultSettings } from '../utils/viewer';
+import { ENV_MAPS } from '../utils/environment';
+import '../styles/threejs-viewer.css';
 
 interface ModelViewerProps {
   modelUrl: string;
@@ -17,7 +19,7 @@ export default function ModelViewer({
   cameraSettings = defaultSettings.camera,
   materialSettings = defaultSettings.material,
   lightingSettings = defaultSettings.lighting,
-  envMapPath = '/images/sunflowers_puresky_2k.hdr',
+  envMapPath = ENV_MAPS.DEFAULT.value,
   onCameraPositionSave
 }: ModelViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -191,12 +193,7 @@ export default function ModelViewer({
     <iframe
       ref={iframeRef}
       src={iframeSrc}
-      style={{
-        width: '100%',
-        height: '540px',
-        border: 'none',
-        borderRadius: '10px'
-      }}
+      className='viewer-iframe'
       title={`${rendererType.toUpperCase()} 3D Viewer`}
     />
   );

@@ -8,11 +8,12 @@ import {
   Box,
   Collapsible,
   Tabs,
-  Select
 } from '@shopify/polaris';
 import { ChevronDownIcon, ChevronUpIcon, TargetIcon } from '@shopify/polaris-icons';
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { useBeforeUnload } from '@remix-run/react';
+import { ENV_MAP_OPTIONS } from '../utils/environment';
+import '../styles/threejs-viewer.css';
 
 interface ModelSettings {
   camera: {
@@ -134,7 +135,7 @@ export function ModelControls({
       <RangeSlider
         label="Field of View"
         value={settings.camera.fov}
-        suffix={<p style={{ minWidth: '24px', textAlign: 'right' }}>{settings.camera.fov}</p>}
+        suffix={<p className="slider-value">{settings.camera.fov}</p>}
         onChange={value => handleSettingChange('camera', 'fov', value)}
         min={30}
         max={120}
@@ -195,11 +196,6 @@ export function ModelControls({
   );
 
   const renderLightingSettings = () => {
-    const envMapOptions = [
-      { label: 'Sunflowers', value: '/images/sunflowers_puresky_2k.hdr' },
-      { label: 'Spruit Sunrise', value: '/images/spruit_sunrise_2k.hdr' },
-      { label: 'Cannon HDR', value: '/images/cannon_1k.hdr' }
-    ];
 
     return (
       <BlockStack gap="400">
@@ -217,10 +213,11 @@ export function ModelControls({
           step={0.1}
           disabled={!settings.lighting.ambientLight}
         />
-        {/* <Select
+        {/* // ezt meg fogom csinalni 
+        <Select
           label="Environment Map"
-          options={envMapOptions}
-          value={settings.envMapPath || envMapOptions[0].value}
+          options={ENV_MAP_OPTIONS}
+          value={settings.envMapPath || ENV_MAP_OPTIONS[0].value}
           onChange={(value) => handleSettingChange('general', 'envMapPath', value)}
         /> */}
       </BlockStack>

@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import Stats from 'stats-gl';
 import { reflector, texture, uv } from 'three/tsl';
+import { ENV_MAPS } from '../../app/utils/environment.ts';
 
 let renderer, scene, camera, controls, currentModel, stats;
 
@@ -72,7 +73,7 @@ async function init() {
 
   // Handle URL parameters
   const modelUrl = params.get('model');
-  const envMapPath = params.get('envMap') || '/images/sunflowers_puresky_2k.hdr';
+  const envMapPath = params.get('envMap') || ENV_MAPS.DEFAULT.value;
 
   // Load environment map
   new RGBELoader()

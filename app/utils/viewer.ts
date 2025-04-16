@@ -1,3 +1,5 @@
+import { ENV_MAPS } from '../utils/environment';
+
 export interface ModelSettings {
     camera: {
       fov: number;
@@ -41,5 +43,5 @@ export interface ModelSettings {
       ambientLight: false,
       intensity: 1
     },
-    envMapPath: '/images/sunflowers_puresky_2k.hdr'
+    envMapPath: ENV_MAPS.DEFAULT.value,
   };

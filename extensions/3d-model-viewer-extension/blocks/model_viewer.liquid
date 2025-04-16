@@ -1,8 +1,9 @@
+{{ 'model-viewer.css' | asset_url | stylesheet_tag }}
+
 <div class="webgpu-model-viewer">
   {% if block.settings.model_url != blank %}
     <iframe 
       src="{{ shop.url }}/apps/webgpu-viewer?model={{ block.settings.model_url | escape }}"
-      style="width: 100%; height: 540px; border: none; border-radius: 8px; overflow: hidden;"
       title="WebGPU 3D Model Viewer"
       loading="lazy"
       allow="camera; xr-spatial-tracking;"
@@ -12,7 +13,7 @@
     >
     </iframe>
   {% else %}
-    <div style="padding: 20px; text-align: center;">
+    <div class="error-message">
       <p>No 3D model URL provided</p>
     </div>
   {% endif %}

@@ -1,0 +1,17 @@
+.webgpu-model-viewer {
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .webgpu-model-viewer iframe {
+    width: 100%;
+    height: 540px;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .webgpu-model-viewer .error-message {
+    padding: 20px;
+    text-align: center;
+  }

@@ -1,6 +1,7 @@
 import { ActionFunctionArgs, json, LoaderFunctionArgs } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
+import { ENV_MAPS } from '../utils/environment';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { admin, session } = await authenticate.admin(request);
@@ -89,7 +90,7 @@ export async function action({ request }: ActionFunctionArgs) {
         roughness: settings.material?.roughness || 0,
         ambientLight: settings.lighting?.ambientLight || false,
         lightIntensity: settings.lighting?.intensity || 1,
-        envMapPath: settings.envMapPath || "/images/sunflowers_puresky_2k.hdr"
+        envMapPath: settings.envMapPath || ENV_MAPS.DEFAULT.value
       },
       create: {
         shop: session.shop,
@@ -107,7 +108,7 @@ export async function action({ request }: ActionFunctionArgs) {
         roughness: settings.material?.roughness || 0,
         ambientLight: settings.lighting?.ambientLight || false,
         lightIntensity: settings.lighting?.intensity || 1,
-        envMapPath: settings.envMapPath || "/images/sunflowers_puresky_2k.hdr"
+        envMapPath: settings.envMapPath || ENV_MAPS.DEFAULT.value
       }
     });
     
