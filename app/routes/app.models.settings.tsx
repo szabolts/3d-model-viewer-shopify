@@ -90,7 +90,7 @@ export async function action({ request }: ActionFunctionArgs) {
         roughness: settings.material?.roughness || 0,
         ambientLight: settings.lighting?.ambientLight || false,
         lightIntensity: settings.lighting?.intensity || 1,
-        envMapPath: settings.envMapPath || ENV_MAPS.DEFAULT
+        envMapPath: settings.envMapPath || ENV_MAPS.DEFAULT.value
       },
       create: {
         shop: session.shop,
@@ -108,7 +108,7 @@ export async function action({ request }: ActionFunctionArgs) {
         roughness: settings.material?.roughness || 0,
         ambientLight: settings.lighting?.ambientLight || false,
         lightIntensity: settings.lighting?.intensity || 1,
-        envMapPath: settings.envMapPath || ENV_MAPS.DEFAULT
+        envMapPath: settings.envMapPath || ENV_MAPS.DEFAULT.value
       }
     });
     

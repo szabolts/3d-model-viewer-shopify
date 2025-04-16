@@ -43,5 +43,5 @@ export interface ModelSettings {
       ambientLight: false,
       intensity: 1
     },
-    envMapPath: ENV_MAPS.DEFAULT,
+    envMapPath: ENV_MAPS.DEFAULT.value,
   };

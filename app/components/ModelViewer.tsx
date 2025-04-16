@@ -19,7 +19,7 @@ export default function ModelViewer({
   cameraSettings = defaultSettings.camera,
   materialSettings = defaultSettings.material,
   lightingSettings = defaultSettings.lighting,
-  envMapPath = ENV_MAPS.DEFAULT,
+  envMapPath = ENV_MAPS.DEFAULT.value,
   onCameraPositionSave
 }: ModelViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);

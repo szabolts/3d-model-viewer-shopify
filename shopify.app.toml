@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "d166b6dd474bd37a4dac6f4300557345"
-application_url = "https://monitors-symbol-text-experiment.trycloudflare.com"
+application_url = "https://keen-matt-anything-column.trycloudflare.com"
 embedded = true
 name = "webdgpu-3d-model-viewer"
 handle = "webdgpu-3d-model-viewer"
@@ -23,13 +23,13 @@ scopes = "read_products,write_products,read_product_listings,read_files,read_the
 
 [auth]
 redirect_urls = [
-  "https://monitors-symbol-text-experiment.trycloudflare.com/auth/callback",
-  "https://monitors-symbol-text-experiment.trycloudflare.com/auth/shopify/callback",
-  "https://monitors-symbol-text-experiment.trycloudflare.com/api/auth/callback"
+  "https://keen-matt-anything-column.trycloudflare.com/auth/callback",
+  "https://keen-matt-anything-column.trycloudflare.com/auth/shopify/callback",
+  "https://keen-matt-anything-column.trycloudflare.com/api/auth/callback"
 ]
 
 [app_proxy]
-url = "https://monitors-symbol-text-experiment.trycloudflare.com/api/viewer"
+url = "https://keen-matt-anything-column.trycloudflare.com/api/viewer"
 subpath = "webgpu-viewer"
 prefix = "apps"
 

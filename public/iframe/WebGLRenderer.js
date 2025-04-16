@@ -73,7 +73,7 @@ async function init() {
 
   // Handle URL parameters
   const modelUrl = params.get('model');
-  const envMapPath = params.get('envMap') || ENV_MAPS.DEFAULT;
+  const envMapPath = params.get('envMap') || ENV_MAPS.DEFAULT.value;
 
   // Load environment map
   new RGBELoader()
